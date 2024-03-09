@@ -1,0 +1,109 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+// Looking for ways to speed up your queries, or scale easily with your serverless or edge functions?
+// Try Prisma Accelerate: https://pris.ly/cli/accelerate-init
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+model User {
+  userId            String        @id @default(uuid())
+  firstname         String
+  lastname          String
+  email             String        @unique
+  password          String
+  followedBy        User[]        @relation("UserFavs")
+  following         User[]        @relation("UserFavs")
+  createdAt         DateTime      @default(now())
+  updatedAt         DateTime      @updatedAt
+  address           Address?      @relation(fields: [addressAddressId], references: [addressId])
+  Profile           Profile?      @relation(fields: [profileProfileId], references: [profileId])
+  reviewGivenBy     Review[]      @relation("reviewsGivenBy")
+  reviewReceived    Review[]      @relation("reviewsReceived")
+  addressAddressId  String        @unique
+  profileProfileId  String        @unique
+  sitterReservation Reservation[] @relation("sitterRes")
+  ownerReservation  Reservation[] @relation("ownerRes")
+}
+
+model Address {
+  addressId  String @id @default(uuid())
+  street     String
+  city       String
+  province   String
+  postalCode String
+  longitude  Int
+  latitude   Int
+  userUserId String @unique
+  User       User[]
+}
+
+model Media {
+  mediaId          String   @id @default(uuid())
+  img              String
+  profileProfileId String   @unique
+  Profile          Profile?
+}
+
+model Profile {
+  profileId         String   @id @default(uuid())
+  img               Media?   @relation(fields: [mediaMediaId], references: [mediaId])
+  mediaMediaId      String?  @unique
+  availabilityStart DateTime
+  availabilityEnd   DateTime
+  availabilitySlot  Int      @default(0)
+  reviews           Review[]
+  petType           String[]
+  User              User[]
+}
+
+model Review {
+  reviewId         String   @id @default(uuid())
+  comment          String
+  Profile          Profile? @relation(fields: [profileProfileId], references: [profileId])
+  profileProfileId String?
+  givenBy          User?    @relation("reviewsGivenBy", fields: [givenById], references: [userId])
+  receiver         User?    @relation("reviewsReceived", fields: [receiverId], references: [userId])
+  givenById        String   @unique
+  receiverId       String   @unique
+  createdAt        DateTime @default(now())
+  updatedAt        DateTime @updatedAt
+}
+
+model Reservation {
+  reserveId  String    @id @default(uuid())
+  sitter     User      @relation("sitterRes", fields: [sitterId], references: [userId])
+  sitterId   String
+  owner      User      @relation("ownerRes", fields: [ownerId], references: [userId])
+  ownerId    String
+  petCount   Int
+  petType    String
+  checkIn    DateTime
+  checkOut   DateTime
+  status     String
+  ratePerDay Int
+  ChatRoom   ChatRoom?
+}
+
+model ChatRoom {
+  roomId        String      @id @default(uuid())
+  reservation   Reservation @relation(fields: [reservationId], references: [reserveId])
+  reservationId String      @unique
+  message       Message[]
+}
+
+model Message {
+  chatId         String    @id @default(uuid())
+  ChatRoom       ChatRoom? @relation(fields: [chatRoomRoomId], references: [roomId])
+  chatRoomRoomId String?
+  type           String
+  path           String?
+  messageText    String?
+}
