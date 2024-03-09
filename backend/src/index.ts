@@ -1,9 +1,9 @@
-require("dotenv/config");
-const router = require("./router");
-const { Server } = require("socket.io");
-const { createServer } = require("http");
+import "dotenv/config";
+import express from "express";
+import router from "./router";
+import { Server } from "socket.io";
+import { createServer } from "http";
 
-const express = require("express");
 
 const app = express();
 const port = process.env.PORT;
