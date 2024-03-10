@@ -13,22 +13,20 @@ datasource db {
   url      = env("DATABASE_URL")
 }
 
-model User {
+model Client {
   userId            String        @id @default(uuid())
   firstname         String
   lastname          String
   email             String        @unique
   password          String
-  followedBy        User[]        @relation("UserFavs")
-  following         User[]        @relation("UserFavs")
+  followedBy        Client[]      @relation("UserFavs")
+  following         Client[]      @relation("UserFavs")
   createdAt         DateTime      @default(now())
   updatedAt         DateTime      @updatedAt
-  address           Address?      @relation(fields: [addressAddressId], references: [addressId])
-  Profile           Profile?      @relation(fields: [profileProfileId], references: [profileId])
+  address           Address?
+  Profile           Profile?
   reviewGivenBy     Review[]      @relation("reviewsGivenBy")
   reviewReceived    Review[]      @relation("reviewsReceived")
-  addressAddressId  String        @unique
-  profileProfileId  String        @unique
   sitterReservation Reservation[] @relation("sitterRes")
   ownerReservation  Reservation[] @relation("ownerRes")
 }
@@ -39,49 +37,47 @@ model Address {
   city       String
   province   String
   postalCode String
-  longitude  Int
-  latitude   Int
+  longitude  Float
+  latitude   Float
+  User       Client @relation(fields: [userUserId], references: [userId])
   userUserId String @unique
-  User       User[]
 }
 
 model Media {
   mediaId          String   @id @default(uuid())
   img              String
+  Profile          Profile? @relation(fields: [profileProfileId], references: [profileId])
   profileProfileId String   @unique
-  Profile          Profile?
 }
 
 model Profile {
   profileId         String   @id @default(uuid())
-  img               Media?   @relation(fields: [mediaMediaId], references: [mediaId])
-  mediaMediaId      String?  @unique
-  availabilityStart DateTime
-  availabilityEnd   DateTime
+  img               Media?
+  availabilityStart DateTime @default(now())
+  availabilityEnd   DateTime @default(now())
   availabilitySlot  Int      @default(0)
-  reviews           Review[]
+  profileType       String
   petType           String[]
-  User              User[]
+  User              Client   @relation(fields: [userUserId], references: [userId])
+  userUserId        String   @unique
 }
 
 model Review {
-  reviewId         String   @id @default(uuid())
-  comment          String
-  Profile          Profile? @relation(fields: [profileProfileId], references: [profileId])
-  profileProfileId String?
-  givenBy          User?    @relation("reviewsGivenBy", fields: [givenById], references: [userId])
-  receiver         User?    @relation("reviewsReceived", fields: [receiverId], references: [userId])
-  givenById        String   @unique
-  receiverId       String   @unique
-  createdAt        DateTime @default(now())
-  updatedAt        DateTime @updatedAt
+  reviewId   String   @id @default(uuid())
+  comment    String
+  givenBy    Client   @relation("reviewsGivenBy", fields: [givenById], references: [userId])
+  receiver   Client   @relation("reviewsReceived", fields: [receiverId], references: [userId])
+  givenById  String
+  receiverId String
+  createdAt  DateTime @default(now())
+  updatedAt  DateTime @updatedAt
 }
 
 model Reservation {
   reserveId  String    @id @default(uuid())
-  sitter     User      @relation("sitterRes", fields: [sitterId], references: [userId])
+  sitter     Client    @relation("sitterRes", fields: [sitterId], references: [userId])
   sitterId   String
-  owner      User      @relation("ownerRes", fields: [ownerId], references: [userId])
+  owner      Client    @relation("ownerRes", fields: [ownerId], references: [userId])
   ownerId    String
   petCount   Int
   petType    String

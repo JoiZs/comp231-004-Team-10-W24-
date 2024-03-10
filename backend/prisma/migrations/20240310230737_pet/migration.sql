@@ -7,8 +7,6 @@ CREATE TABLE "User" (
     "password" TEXT NOT NULL,
     "createdAt" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
     "updatedAt" TIMESTAMP(3) NOT NULL,
-    "addressAddressId" TEXT NOT NULL,
-    "profileProfileId" TEXT NOT NULL,
 
     CONSTRAINT "User_pkey" PRIMARY KEY ("userId")
 );
@@ -20,8 +18,8 @@ CREATE TABLE "Address" (
     "city" TEXT NOT NULL,
     "province" TEXT NOT NULL,
     "postalCode" TEXT NOT NULL,
-    "longitude" INTEGER NOT NULL,
-    "latitude" INTEGER NOT NULL,
+    "longitude" DOUBLE PRECISION NOT NULL,
+    "latitude" DOUBLE PRECISION NOT NULL,
     "userUserId" TEXT NOT NULL,
 
     CONSTRAINT "Address_pkey" PRIMARY KEY ("addressId")
@@ -39,11 +37,12 @@ CREATE TABLE "Media" (
 -- CreateTable
 CREATE TABLE "Profile" (
     "profileId" TEXT NOT NULL,
-    "mediaMediaId" TEXT,
-    "availabilityStart" TIMESTAMP(3) NOT NULL,
-    "availabilityEnd" TIMESTAMP(3) NOT NULL,
+    "availabilityStart" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    "availabilityEnd" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
     "availabilitySlot" INTEGER NOT NULL DEFAULT 0,
+    "profileType" TEXT NOT NULL,
     "petType" TEXT[],
+    "userUserId" TEXT NOT NULL,
 
     CONSTRAINT "Profile_pkey" PRIMARY KEY ("profileId")
 );
@@ -52,7 +51,6 @@ CREATE TABLE "Profile" (
 CREATE TABLE "Review" (
     "reviewId" TEXT NOT NULL,
     "comment" TEXT NOT NULL,
-    "profileProfileId" TEXT,
     "givenById" TEXT NOT NULL,
     "receiverId" TEXT NOT NULL,
     "createdAt" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
@@ -105,25 +103,13 @@ CREATE TABLE "_UserFavs" (
 CREATE UNIQUE INDEX "User_email_key" ON "User"("email");
 
 -- CreateIndex
-CREATE UNIQUE INDEX "User_addressAddressId_key" ON "User"("addressAddressId");
-
--- CreateIndex
-CREATE UNIQUE INDEX "User_profileProfileId_key" ON "User"("profileProfileId");
-
--- CreateIndex
 CREATE UNIQUE INDEX "Address_userUserId_key" ON "Address"("userUserId");
 
 -- CreateIndex
 CREATE UNIQUE INDEX "Media_profileProfileId_key" ON "Media"("profileProfileId");
 
 -- CreateIndex
-CREATE UNIQUE INDEX "Profile_mediaMediaId_key" ON "Profile"("mediaMediaId");
-
--- CreateIndex
-CREATE UNIQUE INDEX "Review_givenById_key" ON "Review"("givenById");
-
--- CreateIndex
-CREATE UNIQUE INDEX "Review_receiverId_key" ON "Review"("receiverId");
+CREATE UNIQUE INDEX "Profile_userUserId_key" ON "Profile"("userUserId");
 
 -- CreateIndex
 CREATE UNIQUE INDEX "ChatRoom_reservationId_key" ON "ChatRoom"("reservationId");
@@ -135,16 +121,13 @@ CREATE UNIQUE INDEX "_UserFavs_AB_unique" ON "_UserFavs"("A", "B");
 CREATE INDEX "_UserFavs_B_index" ON "_UserFavs"("B");
 
 -- AddForeignKey
-ALTER TABLE "User" ADD CONSTRAINT "User_addressAddressId_fkey" FOREIGN KEY ("addressAddressId") REFERENCES "Address"("addressId") ON DELETE RESTRICT ON UPDATE CASCADE;
+ALTER TABLE "Address" ADD CONSTRAINT "Address_userUserId_fkey" FOREIGN KEY ("userUserId") REFERENCES "User"("userId") ON DELETE RESTRICT ON UPDATE CASCADE;
 
 -- AddForeignKey
-ALTER TABLE "User" ADD CONSTRAINT "User_profileProfileId_fkey" FOREIGN KEY ("profileProfileId") REFERENCES "Profile"("profileId") ON DELETE RESTRICT ON UPDATE CASCADE;
+ALTER TABLE "Media" ADD CONSTRAINT "Media_profileProfileId_fkey" FOREIGN KEY ("profileProfileId") REFERENCES "Profile"("profileId") ON DELETE RESTRICT ON UPDATE CASCADE;
 
 -- AddForeignKey
-ALTER TABLE "Profile" ADD CONSTRAINT "Profile_mediaMediaId_fkey" FOREIGN KEY ("mediaMediaId") REFERENCES "Media"("mediaId") ON DELETE SET NULL ON UPDATE CASCADE;
-
--- AddForeignKey
-ALTER TABLE "Review" ADD CONSTRAINT "Review_profileProfileId_fkey" FOREIGN KEY ("profileProfileId") REFERENCES "Profile"("profileId") ON DELETE SET NULL ON UPDATE CASCADE;
+ALTER TABLE "Profile" ADD CONSTRAINT "Profile_userUserId_fkey" FOREIGN KEY ("userUserId") REFERENCES "User"("userId") ON DELETE RESTRICT ON UPDATE CASCADE;
 
 -- AddForeignKey
 ALTER TABLE "Review" ADD CONSTRAINT "Review_givenById_fkey" FOREIGN KEY ("givenById") REFERENCES "User"("userId") ON DELETE RESTRICT ON UPDATE CASCADE;
