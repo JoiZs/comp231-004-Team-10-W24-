@@ -2,7 +2,7 @@ import { Router } from "express";
 import prisma from "../../utils/prismaClient";
 import { isEmail, isStrongPassword } from "validator";
 import { decryptPw, encryptPw } from "../../utils/pwverify";
-import { assignTk } from "../../utils/authtoken";
+import { assignTk } from "../../utils/authtoken"
 
 const authRouter = Router();
 
