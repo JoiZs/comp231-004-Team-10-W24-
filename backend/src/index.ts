@@ -1,24 +1,5 @@
 import "dotenv/config";
 import express from "express";
-<<<<<<< HEAD
-import router from "./router";
-import { Server } from "socket.io";
-import { createServer } from "http";
-
-
-const app = express();
-const port = process.env.PORT;
-const httpServer = createServer(app);
-const io = new Server(httpServer, {});
-
-io.on("connection", (socket) => {});
-
-app.use("/", router);
-
-httpServer.listen(port, () => {
-  console.log(`UP! http://localhost:${port}`);
-});
-=======
 import { authRouter, profileRouter, reservRouter } from "./router";
 import { Server } from "socket.io";
 import { createServer } from "http";
@@ -64,4 +45,3 @@ import prisma from "./utils/prismaClient";
     console.error(e);
     await prisma.$disconnect();
   });
->>>>>>> bk2
