@@ -13,12 +13,17 @@ datasource db {
   url      = env("DATABASE_URL")
 }
 
+<<<<<<< HEAD
 model User {
+=======
+model Client {
+>>>>>>> bk2
   userId            String        @id @default(uuid())
   firstname         String
   lastname          String
   email             String        @unique
   password          String
+<<<<<<< HEAD
   followedBy        User[]        @relation("UserFavs")
   following         User[]        @relation("UserFavs")
   createdAt         DateTime      @default(now())
@@ -29,6 +34,16 @@ model User {
   reviewReceived    Review[]      @relation("reviewsReceived")
   addressAddressId  String        @unique
   profileProfileId  String        @unique
+=======
+  followedBy        Client[]      @relation("UserFavs")
+  following         Client[]      @relation("UserFavs")
+  createdAt         DateTime      @default(now())
+  updatedAt         DateTime      @updatedAt
+  address           Address?
+  Profile           Profile?
+  reviewGivenBy     Review[]      @relation("reviewsGivenBy")
+  reviewReceived    Review[]      @relation("reviewsReceived")
+>>>>>>> bk2
   sitterReservation Reservation[] @relation("sitterRes")
   ownerReservation  Reservation[] @relation("ownerRes")
 }
@@ -39,21 +54,34 @@ model Address {
   city       String
   province   String
   postalCode String
+<<<<<<< HEAD
   longitude  Int
   latitude   Int
   userUserId String @unique
   User       User[]
+=======
+  longitude  Float
+  latitude   Float
+  User       Client @relation(fields: [userUserId], references: [userId])
+  userUserId String @unique
+>>>>>>> bk2
 }
 
 model Media {
   mediaId          String   @id @default(uuid())
   img              String
+<<<<<<< HEAD
   profileProfileId String   @unique
   Profile          Profile?
+=======
+  Profile          Profile? @relation(fields: [profileProfileId], references: [profileId])
+  profileProfileId String   @unique
+>>>>>>> bk2
 }
 
 model Profile {
   profileId         String   @id @default(uuid())
+<<<<<<< HEAD
   img               Media?   @relation(fields: [mediaMediaId], references: [mediaId])
   mediaMediaId      String?  @unique
   availabilityStart DateTime
@@ -75,13 +103,40 @@ model Review {
   receiverId       String   @unique
   createdAt        DateTime @default(now())
   updatedAt        DateTime @updatedAt
+=======
+  img               Media?
+  availabilityStart DateTime @default(now())
+  availabilityEnd   DateTime @default(now())
+  availabilitySlot  Int      @default(0)
+  profileType       String
+  petType           String[]
+  User              Client   @relation(fields: [userUserId], references: [userId])
+  userUserId        String   @unique
+}
+
+model Review {
+  reviewId   String   @id @default(uuid())
+  comment    String
+  givenBy    Client   @relation("reviewsGivenBy", fields: [givenById], references: [userId])
+  receiver   Client   @relation("reviewsReceived", fields: [receiverId], references: [userId])
+  givenById  String
+  receiverId String
+  createdAt  DateTime @default(now())
+  updatedAt  DateTime @updatedAt
+>>>>>>> bk2
 }
 
 model Reservation {
   reserveId  String    @id @default(uuid())
+<<<<<<< HEAD
   sitter     User      @relation("sitterRes", fields: [sitterId], references: [userId])
   sitterId   String
   owner      User      @relation("ownerRes", fields: [ownerId], references: [userId])
+=======
+  sitter     Client    @relation("sitterRes", fields: [sitterId], references: [userId])
+  sitterId   String
+  owner      Client    @relation("ownerRes", fields: [ownerId], references: [userId])
+>>>>>>> bk2
   ownerId    String
   petCount   Int
   petType    String
