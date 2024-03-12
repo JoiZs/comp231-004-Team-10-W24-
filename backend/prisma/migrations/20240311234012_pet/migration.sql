@@ -1,5 +1,5 @@
 -- CreateTable
-CREATE TABLE "User" (
+CREATE TABLE "Client" (
     "userId" TEXT NOT NULL,
     "firstname" TEXT NOT NULL,
     "lastname" TEXT NOT NULL,
@@ -8,7 +8,7 @@ CREATE TABLE "User" (
     "createdAt" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
     "updatedAt" TIMESTAMP(3) NOT NULL,
 
-    CONSTRAINT "User_pkey" PRIMARY KEY ("userId")
+    CONSTRAINT "Client_pkey" PRIMARY KEY ("userId")
 );
 
 -- CreateTable
@@ -50,6 +50,7 @@ CREATE TABLE "Profile" (
 -- CreateTable
 CREATE TABLE "Review" (
     "reviewId" TEXT NOT NULL,
+    "rating" INTEGER NOT NULL,
     "comment" TEXT NOT NULL,
     "givenById" TEXT NOT NULL,
     "receiverId" TEXT NOT NULL,
@@ -100,7 +101,7 @@ CREATE TABLE "_UserFavs" (
 );
 
 -- CreateIndex
-CREATE UNIQUE INDEX "User_email_key" ON "User"("email");
+CREATE UNIQUE INDEX "Client_email_key" ON "Client"("email");
 
 -- CreateIndex
 CREATE UNIQUE INDEX "Address_userUserId_key" ON "Address"("userUserId");
@@ -121,25 +122,25 @@ CREATE UNIQUE INDEX "_UserFavs_AB_unique" ON "_UserFavs"("A", "B");
 CREATE INDEX "_UserFavs_B_index" ON "_UserFavs"("B");
 
 -- AddForeignKey
-ALTER TABLE "Address" ADD CONSTRAINT "Address_userUserId_fkey" FOREIGN KEY ("userUserId") REFERENCES "User"("userId") ON DELETE RESTRICT ON UPDATE CASCADE;
+ALTER TABLE "Address" ADD CONSTRAINT "Address_userUserId_fkey" FOREIGN KEY ("userUserId") REFERENCES "Client"("userId") ON DELETE RESTRICT ON UPDATE CASCADE;
 
 -- AddForeignKey
 ALTER TABLE "Media" ADD CONSTRAINT "Media_profileProfileId_fkey" FOREIGN KEY ("profileProfileId") REFERENCES "Profile"("profileId") ON DELETE RESTRICT ON UPDATE CASCADE;
 
 -- AddForeignKey
-ALTER TABLE "Profile" ADD CONSTRAINT "Profile_userUserId_fkey" FOREIGN KEY ("userUserId") REFERENCES "User"("userId") ON DELETE RESTRICT ON UPDATE CASCADE;
+ALTER TABLE "Profile" ADD CONSTRAINT "Profile_userUserId_fkey" FOREIGN KEY ("userUserId") REFERENCES "Client"("userId") ON DELETE RESTRICT ON UPDATE CASCADE;
 
 -- AddForeignKey
-ALTER TABLE "Review" ADD CONSTRAINT "Review_givenById_fkey" FOREIGN KEY ("givenById") REFERENCES "User"("userId") ON DELETE RESTRICT ON UPDATE CASCADE;
+ALTER TABLE "Review" ADD CONSTRAINT "Review_givenById_fkey" FOREIGN KEY ("givenById") REFERENCES "Client"("userId") ON DELETE RESTRICT ON UPDATE CASCADE;
 
 -- AddForeignKey
-ALTER TABLE "Review" ADD CONSTRAINT "Review_receiverId_fkey" FOREIGN KEY ("receiverId") REFERENCES "User"("userId") ON DELETE RESTRICT ON UPDATE CASCADE;
+ALTER TABLE "Review" ADD CONSTRAINT "Review_receiverId_fkey" FOREIGN KEY ("receiverId") REFERENCES "Client"("userId") ON DELETE RESTRICT ON UPDATE CASCADE;
 
 -- AddForeignKey
-ALTER TABLE "Reservation" ADD CONSTRAINT "Reservation_sitterId_fkey" FOREIGN KEY ("sitterId") REFERENCES "User"("userId") ON DELETE RESTRICT ON UPDATE CASCADE;
+ALTER TABLE "Reservation" ADD CONSTRAINT "Reservation_sitterId_fkey" FOREIGN KEY ("sitterId") REFERENCES "Client"("userId") ON DELETE RESTRICT ON UPDATE CASCADE;
 
 -- AddForeignKey
-ALTER TABLE "Reservation" ADD CONSTRAINT "Reservation_ownerId_fkey" FOREIGN KEY ("ownerId") REFERENCES "User"("userId") ON DELETE RESTRICT ON UPDATE CASCADE;
+ALTER TABLE "Reservation" ADD CONSTRAINT "Reservation_ownerId_fkey" FOREIGN KEY ("ownerId") REFERENCES "Client"("userId") ON DELETE RESTRICT ON UPDATE CASCADE;
 
 -- AddForeignKey
 ALTER TABLE "ChatRoom" ADD CONSTRAINT "ChatRoom_reservationId_fkey" FOREIGN KEY ("reservationId") REFERENCES "Reservation"("reserveId") ON DELETE RESTRICT ON UPDATE CASCADE;
@@ -148,7 +149,7 @@ ALTER TABLE "ChatRoom" ADD CONSTRAINT "ChatRoom_reservationId_fkey" FOREIGN KEY 
 ALTER TABLE "Message" ADD CONSTRAINT "Message_chatRoomRoomId_fkey" FOREIGN KEY ("chatRoomRoomId") REFERENCES "ChatRoom"("roomId") ON DELETE SET NULL ON UPDATE CASCADE;
 
 -- AddForeignKey
-ALTER TABLE "_UserFavs" ADD CONSTRAINT "_UserFavs_A_fkey" FOREIGN KEY ("A") REFERENCES "User"("userId") ON DELETE CASCADE ON UPDATE CASCADE;
+ALTER TABLE "_UserFavs" ADD CONSTRAINT "_UserFavs_A_fkey" FOREIGN KEY ("A") REFERENCES "Client"("userId") ON DELETE CASCADE ON UPDATE CASCADE;
 
 -- AddForeignKey
-ALTER TABLE "_UserFavs" ADD CONSTRAINT "_UserFavs_B_fkey" FOREIGN KEY ("B") REFERENCES "User"("userId") ON DELETE CASCADE ON UPDATE CASCADE;
+ALTER TABLE "_UserFavs" ADD CONSTRAINT "_UserFavs_B_fkey" FOREIGN KEY ("B") REFERENCES "Client"("userId") ON DELETE CASCADE ON UPDATE CASCADE;

@@ -1,4 +1,5 @@
 import "dotenv/config";
+import "./types/context";
 import express from "express";
 import { authRouter, profileRouter, reservRouter } from "./router";
 import { Server } from "socket.io";

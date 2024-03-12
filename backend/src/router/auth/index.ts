@@ -2,7 +2,7 @@ import { Router } from "express";
 import prisma from "../../utils/prismaClient";
 import { isEmail, isStrongPassword } from "validator";
 import { decryptPw, encryptPw } from "../../utils/pwverify";
-import { assignTk } from "../../utils/authtoken"
+import { assignTk } from "../../utils/authtoken";
 
 const authRouter = Router();
 
@@ -102,7 +102,10 @@ authRouter.post("/login", async (req, res) => {
   if (!isEmail(email))
     return res.json({ type: "error", message: "Invalid email address." });
 
-  const checkUser = await prisma.client.findFirst({ where: { email: email } });
+  const checkUser = await prisma.client.findFirst({
+    where: { email: email },
+    select: { Profile: true, email: true, userId: true, password: true },
+  });
   if (!checkUser)
     return res.json({
       type: "error",
@@ -113,7 +116,11 @@ authRouter.post("/login", async (req, res) => {
     return res.json({ type: "error", message: "Invalid password." });
   }
 
-  const tk = assignTk({ email: checkUser.email, userid: checkUser.userId });
+  const tk = assignTk({
+    email: checkUser.email,
+    userid: checkUser.userId,
+    userType: checkUser.Profile?.profileType,
+  });
 
   res.cookie("__petSitTk", tk, {
     httpOnly: true,
