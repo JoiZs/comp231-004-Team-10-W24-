@@ -5,12 +5,14 @@
 // Try Prisma Accelerate: https://pris.ly/cli/accelerate-init
 
 generator client {
-  provider = "prisma-client-js"
+  provider        = "prisma-client-js"
+  previewFeatures = ["postgresqlExtensions"]
 }
 
 datasource db {
-  provider = "postgresql"
-  url      = env("DATABASE_URL")
+  provider   = "postgresql"
+  url        = env("DATABASE_URL")
+  extensions = [postgis]
 }
 
 model Client {
@@ -37,8 +39,8 @@ model Address {
   city       String
   province   String
   postalCode String
-  longitude  Float
   latitude   Float
+  longitude  Float
   User       Client @relation(fields: [userUserId], references: [userId])
   userUserId String @unique
 }

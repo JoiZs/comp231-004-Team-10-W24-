@@ -1,3 +1,6 @@
+-- CreateExtension
+CREATE EXTENSION IF NOT EXISTS "postgis";
+
 -- CreateTable
 CREATE TABLE "Client" (
     "userId" TEXT NOT NULL,
@@ -18,8 +21,8 @@ CREATE TABLE "Address" (
     "city" TEXT NOT NULL,
     "province" TEXT NOT NULL,
     "postalCode" TEXT NOT NULL,
-    "longitude" DOUBLE PRECISION NOT NULL,
     "latitude" DOUBLE PRECISION NOT NULL,
+    "longitude" DOUBLE PRECISION NOT NULL,
     "userUserId" TEXT NOT NULL,
 
     CONSTRAINT "Address_pkey" PRIMARY KEY ("addressId")

@@ -1,6 +1,7 @@
 import { Handler } from "express";
 import { verifyTk } from "../utils/authtoken";
 import prisma from "../utils/prismaClient";
+import "../types/context";
 
 export const checkAuth: Handler = async (req, res, next) => {
   const { __petSitTk } = req.cookies;
