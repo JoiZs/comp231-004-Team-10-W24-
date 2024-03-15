@@ -1,6 +1,6 @@
 import { Router } from "express";
 import prisma from "../../utils/prismaClient";
-import { checkAuth } from "../../middleware/checkauth";
+import { isAuthenticated } from "../../utils/loginverify";
 
 const reviewRouter = Router();
 
@@ -26,7 +26,7 @@ reviewRouter.post("/allreviews", async (req, res) => {
   });
 });
 
-reviewRouter.post("/postreview", checkAuth, async (req, res) => {
+reviewRouter.post("/postreview", isAuthenticated, async (req, res) => {
   const userid = req.context.uid;
   const { sitterId, rating, comment } = req.body;
 
@@ -58,7 +58,7 @@ reviewRouter.post("/postreview", checkAuth, async (req, res) => {
   });
 });
 
-reviewRouter.patch("/updatereview", checkAuth, async (req, res) => {
+reviewRouter.patch("/updatereview", isAuthenticated, async (req, res) => {
   const userid = req.context.uid;
   const { reviewId, rating, comment } = req.body;
 

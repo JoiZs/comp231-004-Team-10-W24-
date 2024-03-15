@@ -5,5 +5,10 @@ declare module "express-serve-static-core" {
     context: {
       uid: string;
     };
+    user: {
+      userid: string;
+      userType: string;
+      email: string;
+    };
   }
 }

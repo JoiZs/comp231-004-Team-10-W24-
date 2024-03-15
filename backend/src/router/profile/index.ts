@@ -1,29 +1,26 @@
 import { Router } from "express";
-import { verifyTk } from "../../utils/authtoken";
 import prisma from "../../utils/prismaClient";
 import { excludeEntry } from "../../utils/excludefieldprisma";
 import { Client } from "@prisma/client";
-import { checkAuth } from "../../middleware/checkauth";
 import { isDate } from "validator";
 import { deleteImg, resizeImg, uploadImg } from "../../utils/imgupload";
+import { isAuthenticated } from "../../utils/loginverify";
 
 const profileRouter = Router();
 
 profileRouter.get("/me", async (req, res) => {
-  const { __petSitTk } = req.cookies;
+  const user = req.user;
 
-  const payload = await verifyTk(__petSitTk);
-  if (!payload || typeof payload == "string")
-    return res.json({ type: "error", message: "Invalid user. " });
+  if (!user) return res.json({ type: "error", message: "Unauthorized user." });
 
   const findUser = await prisma.client.findFirst({
-    where: { userId: payload.payload.userId },
+    where: { userId: user.userid },
     include: {
       Profile: true,
       address: true,
-      reviewReceived: payload.payload.userType == "sitter" && true,
-      followedBy: payload.payload.userType == "sitter" && true,
-      following: payload.payload.userType == "owner" && true,
+      reviewReceived: user.userType == "sitter" && true,
+      followedBy: user.userType == "sitter" && true,
+      following: user.userType == "owner" && true,
     },
   });
 
@@ -78,7 +75,7 @@ profileRouter.get("/:stid", (req, res) => {
 
 profileRouter.patch(
   "/changepic",
-  checkAuth,
+  isAuthenticated,
   uploadImg.single("profile"),
   async (req, res) => {
     if (!req.file)
@@ -120,7 +117,7 @@ profileRouter.patch(
   }
 );
 
-profileRouter.patch("/update", checkAuth, async (req, res) => {
+profileRouter.patch("/update", isAuthenticated, async (req, res) => {
   const { address, fname, lname, pType } = req.body;
 
   const userid = req.context.uid;
@@ -146,7 +143,7 @@ profileRouter.patch("/update", checkAuth, async (req, res) => {
   return res.json({ type: "success", message: "Successfully updated." });
 });
 
-profileRouter.patch("/changeava", checkAuth, async (req, res) => {
+profileRouter.patch("/changeava", isAuthenticated, async (req, res) => {
   const { avSlot, avStart, avEnd } = req.body;
 
   if (!avSlot || !avStart || !avEnd)

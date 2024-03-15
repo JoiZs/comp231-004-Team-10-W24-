@@ -1,11 +1,11 @@
 import { Router } from "express";
-import { checkAuth } from "../../middleware/checkauth";
 import prisma from "../../utils/prismaClient";
 import { isDate } from "validator";
+import { isAuthenticated } from "../../utils/loginverify";
 
 const reservRouter = Router();
 
-reservRouter.get("/reserv", checkAuth, async (req, res) => {
+reservRouter.get("/reserv", isAuthenticated, async (req, res) => {
   const userid = req.context.uid;
   const { status } = req.body;
 
@@ -23,7 +23,7 @@ reservRouter.get("/reserv", checkAuth, async (req, res) => {
   });
 });
 
-reservRouter.patch("/req_updatereserv", checkAuth, async (req, res) => {
+reservRouter.patch("/req_updatereserv", isAuthenticated, async (req, res) => {
   const userid = req.context.uid;
   const { resvId, dayRate, petCount, petType, checkIn, checkOut } = req.body;
 
@@ -64,7 +64,7 @@ reservRouter.patch("/req_updatereserv", checkAuth, async (req, res) => {
   } catch (error) {}
 });
 
-reservRouter.patch("/acpt_updatereserv", checkAuth, async (req, res) => {
+reservRouter.patch("/acpt_updatereserv", isAuthenticated, async (req, res) => {
   const userid = req.context.uid;
   const { resvId, status = "pending" } = req.body;
 
@@ -86,7 +86,7 @@ reservRouter.patch("/acpt_updatereserv", checkAuth, async (req, res) => {
   });
 });
 
-reservRouter.post("/create", checkAuth, async (req, res) => {
+reservRouter.post("/create", isAuthenticated, async (req, res) => {
   const userid = req.context.uid;
   const {
     sitterId,
@@ -144,7 +144,7 @@ reservRouter.post("/create", checkAuth, async (req, res) => {
   });
 });
 
-reservRouter.patch("/req_cancel", checkAuth, async (req, res) => {
+reservRouter.patch("/req_cancel", isAuthenticated, async (req, res) => {
   const userid = req.context.uid;
   const { reservId } = req.body;
 

@@ -96,6 +96,8 @@ model ChatRoom {
   reservation   Reservation @relation(fields: [reservationId], references: [reserveId])
   reservationId String      @unique
   message       Message[]
+  createdAt     DateTime    @default(now())
+  updatedAt     DateTime    @updatedAt
 }
 
 model Message {
@@ -105,4 +107,5 @@ model Message {
   type           String
   path           String?
   messageText    String?
+  createdAt      DateTime  @default(now())
 }
