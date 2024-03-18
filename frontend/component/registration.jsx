@@ -1,5 +1,24 @@
 import React, { useState } from 'react';
-import '../component/registration.css';
+import {
+  ChakraProvider,
+  extendTheme,
+  Input,
+  Button,
+  Radio,
+  RadioGroup,
+  Stack,
+  Box,
+  FormControl,
+  FormLabel,
+  Heading,
+} from '@chakra-ui/react';
+
+// Optional: Customize the theme
+const theme = extendTheme({
+  components: {
+    // Customize your theme here
+  },
+});
 
 const Registration = () => {
   const [username, setUsername] = useState('');
@@ -8,66 +27,47 @@ const Registration = () => {
 
   const handleSubmit = async (event) => {
     event.preventDefault();
-    // Handle registration logic here
     console.log({ username, password, role });
-    // You would replace the above console.log with your fetch to the backend
   };
 
   const handleLoginRedirect = () => {
-    // Redirect to login page
     console.log("Redirect to login");
-    // You might use react-router-dom's useHistory here for navigation or a window.location redirect
   };
 
   return (
-    <div className="registration-container">
-      <h2>Account registration</h2>
-      <form onSubmit={handleSubmit}>
-        <label>
-          Username
-          <input 
-            type="email" 
-            value={username} 
-            onChange={(e) => setUsername(e.target.value)} 
-            required 
-          />
-        </label>
-        <label>
-          Password
-          <input 
-            type="password" 
-            value={password} 
-            onChange={(e) => setPassword(e.target.value)} 
-            required 
-          />
-        </label>
-        <fieldset>
-          <legend>Role</legend>
-          <label>
-            <input 
-              type="radio" 
-              name="role" 
-              value="pet-sitter" 
-              checked={role === 'pet-sitter'} 
-              onChange={(e) => setRole(e.target.value)} 
+    <ChakraProvider theme={theme}>
+      <Box className="registration-container" p={5}>
+        <Heading as="h2" size="lg" mb={5}>Account Registration</Heading>
+        <form onSubmit={handleSubmit}>
+          <FormControl isRequired>
+            <FormLabel>Username</FormLabel>
+            <Input 
+              type="email" 
+              value={username} 
+              onChange={(e) => setUsername(e.target.value)}
             />
-            pet sitter
-          </label>
-          <label>
-            <input 
-              type="radio" 
-              name="role" 
-              value="pet-owner" 
-              checked={role === 'pet-owner'} 
-              onChange={(e) => setRole(e.target.value)} 
+          </FormControl>
+          <FormControl isRequired mt={4}>
+            <FormLabel>Password</FormLabel>
+            <Input 
+              type="password" 
+              value={password} 
+              onChange={(e) => setPassword(e.target.value)}
             />
-            pet owner (customer)
-          </label>
-        </fieldset>
-        <button type="submit">Create account</button>
-        <button type="button" onClick={handleLoginRedirect}>Login</button>
-      </form>
-    </div>
+          </FormControl>
+          <RadioGroup onChange={setRole} value={role} mt={4}>
+            <Stack direction="row">
+              <Radio value="pet-sitter">Pet Sitter</Radio>
+              <Radio value="pet-owner">Pet Owner (Customer)</Radio>
+            </Stack>
+          </RadioGroup>
+          <Stack direction="row" spacing={4} align="center" justify="center" mt={4}>
+            <Button type="submit" colorScheme="blue">Create Account</Button>
+            <Button onClick={handleLoginRedirect} colorScheme="teal">Login</Button>
+          </Stack>
+        </form>
+      </Box>
+    </ChakraProvider>
   );
 };
 
