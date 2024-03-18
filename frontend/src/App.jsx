@@ -1,8 +1,33 @@
 import { useState } from 'react'
 import reactLogo from './assets/react.svg'
 import viteLogo from '/vite.svg'
+import React from 'react';
+import { BrowserRouter, Routes, Route } from 'react-router-dom';
 import './App.css'
 
+
+import Registration from '../component/registration'
+
+import Profile_sitter from '../component/profile_sitter';
+import Profile_owner from '../component/profile_owner';
+
+
+
+function App() {
+  return (
+    <BrowserRouter>
+     <div className="App">
+      <Routes>
+        <Route path="/register" element={<Registration />} />
+        <Route path="/profile_sitter" element={<Profile_sitter />} />
+        <Route path="/profile_owner" element={<Profile_owner />} />
+        {/* Define other routes here */}
+      </Routes>
+      </div>
+    </BrowserRouter>
+  );
+}
+/*
 function App() {
   const [count, setCount] = useState(0)
 
@@ -31,5 +56,6 @@ function App() {
     </>
   )
 }
+*/
 
 export default App
