@@ -17,6 +17,7 @@ import {
   ModalBody,
   ModalFooter,
   Text,
+  Textarea,
   Heading,
   Flex
 } from '@chakra-ui/react';
@@ -33,7 +34,7 @@ const Profile_Owner = () => {
       <Heading as="h2" size="lg" mb={5}>Pet Owner Registration</Heading>
       <Flex direction={{ base: 'column', md: 'row' }} alignItems="start"justifyContent="space-between">
         {/* Personal Information Section */}
-        <VStack align="start" spacing={4}>
+        <VStack flex={3} align="start" spacing={4}>
         <FormControl id="fname" display="flex" alignItems="left">
         <FormLabel>First Name:</FormLabel>
               <Input type="text" placeholder="Enter your first name" />
@@ -42,8 +43,12 @@ const Profile_Owner = () => {
               <FormLabel>Last Name:</FormLabel>
               <Input type="text" placeholder="Enter your last name" />
             </FormControl>
-            <FormControl id="street"display="flex" alignItems="left">
-              <FormLabel>Street:</FormLabel>
+            <FormControl id="address1"display="flex" alignItems="left">
+              <FormLabel>Address1:</FormLabel>
+              <Input type="text" placeholder="Enter your address" />
+            </FormControl>
+            <FormControl id="address2"display="flex" alignItems="left">
+              <FormLabel>Address2:</FormLabel>
               <Input type="text" placeholder="Enter your address" />
             </FormControl>
             <FormControl id="city"display="flex" alignItems="left">
@@ -84,7 +89,7 @@ const Profile_Owner = () => {
             </FormControl>
             <FormControl id="Remarks"display="flex" alignItems="left">
               <FormLabel>Remarks:</FormLabel>
-              <Input type="text" placeholder="Remarks" />
+              <Textarea placeholder="Remarks" />
             </FormControl>
             <HStack spacing={4}>
               <Button colorScheme="blue">Save</Button>
@@ -94,7 +99,7 @@ const Profile_Owner = () => {
    
         
         {/* Profile Picture Section */}
-        <Box borderWidth="1px" borderRadius="lg" p={4} m={4} boxShadow="lg" width="full">
+        <Box flex={1} borderWidth="1px" borderRadius="lg" p={4} m={4} boxShadow="lg" width="full">
           <VStack spacing={4} align="center">
             <Image
               borderRadius="full"
