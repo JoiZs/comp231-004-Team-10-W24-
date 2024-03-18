@@ -16,7 +16,7 @@ import {
 // Optional: Customize the theme
 const theme = extendTheme({
   components: {
-    // Customize your theme here
+    // Customize theme here
   },
 });
 

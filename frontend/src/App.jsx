@@ -8,7 +8,6 @@ import './App.css'
 
 
 import Registration from '../component/registration'
-
 import Profile_sitter from '../component/profile_sitter';
 import Profile_owner from '../component/profile_owner';
 
