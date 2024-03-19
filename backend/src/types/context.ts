@@ -12,3 +12,10 @@ declare module "express-serve-static-core" {
     };
   }
 }
+
+declare module "node:http" {
+  interface IncomingMessage {
+    session: any;
+    user: any;
+  }
+}

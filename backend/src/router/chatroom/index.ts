@@ -1,5 +1,4 @@
 import { Router } from "express";
-
 import prisma from "../../utils/prismaClient";
 import { isAuthenticated } from "../../utils/loginverify";
 
