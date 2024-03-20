@@ -2,9 +2,6 @@ import { Request } from "express";
 
 declare module "express-serve-static-core" {
   interface Request {
-    context: {
-      uid: string;
-    };
     user: {
       userid: string;
       userType: string;
