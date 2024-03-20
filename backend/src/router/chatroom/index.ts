@@ -5,7 +5,7 @@ import { isAuthenticated } from "../../utils/loginverify";
 const chatroomRouter = Router();
 
 chatroomRouter.post("/reserv", isAuthenticated, async (req, res) => {
-  const userid = req.context.uid;
+  const userid = req.user.userid;
   const { reservId, msgScroll = 1 } = req.body;
 
   const chatRoom = await prisma.chatRoom.findFirst({

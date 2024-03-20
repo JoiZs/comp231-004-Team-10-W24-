@@ -27,7 +27,7 @@ reviewRouter.post("/allreviews", async (req, res) => {
 });
 
 reviewRouter.post("/postreview", isAuthenticated, async (req, res) => {
-  const userid = req.context.uid;
+  const userid = req.user.userid;
   const { sitterId, rating, comment } = req.body;
 
   if (!sitterId)
@@ -39,10 +39,10 @@ reviewRouter.post("/postreview", isAuthenticated, async (req, res) => {
   try {
     await prisma.review.create({
       data: {
-        receiverId: sitterId,
-        givenById: userid,
         rating: rating,
         comment: comment,
+        givenBy: { connect: { userId: userid } },
+        receiver: { connect: { userId: sitterId } },
       },
     });
   } catch (error) {
@@ -59,7 +59,7 @@ reviewRouter.post("/postreview", isAuthenticated, async (req, res) => {
 });
 
 reviewRouter.patch("/updatereview", isAuthenticated, async (req, res) => {
-  const userid = req.context.uid;
+  const userid = req.user.userid;
   const { reviewId, rating, comment } = req.body;
 
   try {

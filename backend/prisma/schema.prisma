@@ -67,8 +67,8 @@ model Profile {
 
 model Review {
   reviewId   String    @id @default(uuid())
-  rating     Int?
-  comment    String?
+  rating     Int
+  comment    String
   givenBy    Client    @relation("reviewsGivenBy", fields: [givenById], references: [userId])
   receiver   Client    @relation("reviewsReceived", fields: [receiverId], references: [userId])
   givenById  String

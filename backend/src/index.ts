@@ -2,7 +2,6 @@ import "dotenv/config";
 import "./types/context";
 import "./utils/loginverify";
 import express from "express";
-import cookie from "cookie";
 import {
   authRouter,
   chatroomRouter,
@@ -29,7 +28,7 @@ import passport from "passport";
   const MemoryStore = new session.MemoryStore();
   const io = new Server(httpServer, {
     cors: {
-      origin: process.env.ENV == "development" ? "http://localhost:5173" : "",
+      origin: process.env.CLIENT_HOST,
       credentials: true,
     },
   });
@@ -44,7 +43,7 @@ import passport from "passport";
   // Middleware
   app.use(
     cors({
-      origin: process.env.ENV == "development" ? "http://localhost:5173" : "",
+      origin: process.env.CLIENT_HOST,
       credentials: true,
     })
   );
@@ -58,6 +57,7 @@ import passport from "passport";
   io.engine.use(onlyForHandshake(passport.session()));
 
   io.use((socket, next) => {
+    console.log(socket.request.user);
     if (!socket.request.user) {
       // Emit event to client for redirection or error display
       socket.emit("unauthorized");
