@@ -67,8 +67,18 @@ import passport from "passport";
   });
 
   io.on("connection", (socket) => {
-    console.log(socket.request.user);
-    socket.on("sendMsg", converse);
+    const userid = socket.request.user.userid;
+
+    socket.on("sendMsg", (payload) =>
+      converse(
+        userid,
+        payload.receiver,
+        payload.roomid,
+        payload.msg,
+        io,
+        socket
+      )
+    );
   });
 
   app.use("/profiles/", express.static("public/data/profiles"));

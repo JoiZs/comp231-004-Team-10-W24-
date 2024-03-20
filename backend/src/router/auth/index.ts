@@ -18,6 +18,7 @@ authRouter.post("/register", async (req, res) => {
     city,
     province,
     postal,
+    suburb,
     lat,
     long,
   } = req.body;
@@ -73,6 +74,7 @@ authRouter.post("/register", async (req, res) => {
             postalCode: postal,
             latitude: lat,
             longitude: long,
+            suburb: suburb,
           },
         },
         Profile: {

@@ -16,6 +16,6 @@ declare module "express-serve-static-core" {
 declare module "node:http" {
   interface IncomingMessage {
     session: any;
-    user: any;
+    user: { userid: string; userType: string; email: string };
   }
 }

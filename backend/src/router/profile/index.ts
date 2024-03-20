@@ -8,7 +8,7 @@ import { isAuthenticated } from "../../utils/loginverify";
 
 const profileRouter = Router();
 
-profileRouter.get("/me", async (req, res) => {
+profileRouter.get("/me", isAuthenticated, async (req, res) => {
   const user = req.user;
 
   if (!user) return res.json({ type: "error", message: "Unauthorized user." });
@@ -87,7 +87,7 @@ profileRouter.patch(
     try {
       const resizedPath = await resizeImg(req.file);
       const checkImg = await prisma.media.findFirst({
-        where: { Profile: { userUserId: req.context.uid } },
+        where: { Profile: { userUserId: req.user.userid } },
       });
 
       if (!!checkImg) {
@@ -95,7 +95,7 @@ profileRouter.patch(
         deleteImg(checkImg.img);
       }
       await prisma.profile.update({
-        where: { userUserId: req.context.uid },
+        where: { userUserId: req.user.userid },
         data: {
           img: {
             upsert: {
@@ -120,7 +120,7 @@ profileRouter.patch(
 profileRouter.patch("/update", isAuthenticated, async (req, res) => {
   const { address, fname, lname, pType } = req.body;
 
-  const userid = req.context.uid;
+  const userid = req.user.userid;
 
   try {
     await prisma.client.update({
@@ -155,7 +155,7 @@ profileRouter.patch("/changeava", isAuthenticated, async (req, res) => {
   if (isDate(avStart) || isDate(avEnd))
     return res.json({ type: "error", message: "Invalid date." });
 
-  const userid = req.context.uid;
+  const userid = req.user.userid;
 
   try {
     await prisma.profile.update({
