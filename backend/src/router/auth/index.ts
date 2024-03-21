@@ -63,8 +63,8 @@ authRouter.post("/register", async (req, res) => {
       data: {
         email: email,
         password: await encryptPw(password),
-        firstname: firstname,
-        lastname: lastname,
+         firstname: firstname,
+         lastname: lastname,
         address: {
           create: {
             street,
