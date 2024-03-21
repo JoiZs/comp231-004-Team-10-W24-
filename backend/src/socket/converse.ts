@@ -43,6 +43,6 @@ export const converse = async (
         });
       });
   } else if (msg.type == "img") {
-    uploadImg.single("msgs");
+    console.log(msg.img);
   }
 };
