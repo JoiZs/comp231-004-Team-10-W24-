@@ -15,13 +15,13 @@
 - *Setup PostgreSQL Database*
   - [Docker](https://www.docker.com/products/docker-desktop/) must be installed
   - Check Docker-compose is ready
-    - ![check docker-compose version](/read_me/imgs/sc2.png)
+    - ![check docker-compose version](read_me/imgs/sc2.png)
     - make sure Docker-compose.yml setup PostgreSQL well
     - run docker-compose file by
       - > docker-compose up -d
       - then check docker container is up by
         - >docker ps
-      - ![check docker container](/read_me/imgs/sc3.png)
+      - ![check docker container](read_me/imgs/sc3.png)
 - *Initialize the database using Prisma* 
   - > npx prisma migrate dev
   - Run seeding for storing pre-records in the database (please check /src/prisma/seeds.ts for records)
@@ -66,7 +66,7 @@
   };
 ```
 
-> ![Login Axios Request](/read_me/imgs/sc4.png)
+> ![Login Axios Request](read_me/imgs/sc4.png)
  
 
   + Authentication
