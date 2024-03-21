@@ -1,0 +1,108 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>package.json</title>
+  <meta http-equiv="content-type" content="text/html; charset=UTF-8">
+  <link rel="stylesheet" media="all" href="doc-style.css" />
+  <script src="doc-filelist.js"></script>
+  <script>
+    var relativeDir = "";
+    var thisFile = "package.json";
+    var defaultSidebar = true;
+  </script>
+  <script src="doc-script.js"></script>
+
+</head>
+<body>
+  <div id="sidebar_wrapper">
+    <div id="sidebar_switch">
+      <span class="tree">Files</span>
+      <span class="headings">Headings</span>
+    </div>
+    <div id="tree"></div>
+    <div id="headings">
+
+    </div>
+  </div>
+  <div id="sidebar-toggle"></div>
+  <div id="container">
+    <div class="background highlight"></div>
+<table cellpadding="0" cellspacing="0">
+  <tbody>
+    
+      <tr>
+        <td class="docs">
+          <h1>package.json</h1>
+        </td>
+        <td class="code highlight"></td>
+      </tr>
+    
+    
+      <tr>
+        <td class="docs">
+          <div class="pilwrap">
+  <a class="pilcrow" href="#section-1" id="section-1"></a>
+</div>
+
+        </td>
+        <td class="code highlight">
+          <pre class="json">{
+  <span class="hljs-attr">"name"</span>: <span class="hljs-string">"backend"</span>,
+  <span class="hljs-attr">"version"</span>: <span class="hljs-string">"1.0.0"</span>,
+  <span class="hljs-attr">"description"</span>: <span class="hljs-string">""</span>,
+  <span class="hljs-attr">"main"</span>: <span class="hljs-string">"index.js"</span>,
+  <span class="hljs-attr">"scripts"</span>: {
+    <span class="hljs-attr">"dev"</span>: <span class="hljs-string">"nodemon src/index.ts"</span>,
+    <span class="hljs-attr">"build"</span>: <span class="hljs-string">"tsc"</span>,
+    <span class="hljs-attr">"start"</span>: <span class="hljs-string">"node dist/index.js"</span>
+  },
+  <span class="hljs-attr">"keywords"</span>: [],
+  <span class="hljs-attr">"author"</span>: <span class="hljs-string">""</span>,
+  <span class="hljs-attr">"license"</span>: <span class="hljs-string">"ISC"</span>,
+  <span class="hljs-attr">"dependencies"</span>: {
+    <span class="hljs-attr">"@prisma/client"</span>: <span class="hljs-string">"^5.10.2"</span>,
+    <span class="hljs-attr">"@types/validator"</span>: <span class="hljs-string">"^13.11.9"</span>,
+    <span class="hljs-attr">"argon2"</span>: <span class="hljs-string">"^0.40.1"</span>,
+    <span class="hljs-attr">"body-parser"</span>: <span class="hljs-string">"^1.20.2"</span>,
+    <span class="hljs-attr">"cookie-parser"</span>: <span class="hljs-string">"^1.4.6"</span>,
+    <span class="hljs-attr">"cors"</span>: <span class="hljs-string">"^2.8.5"</span>,
+    <span class="hljs-attr">"express"</span>: <span class="hljs-string">"^4.18.2"</span>,
+    <span class="hljs-attr">"express-session"</span>: <span class="hljs-string">"^1.18.0"</span>,
+    <span class="hljs-attr">"geolib"</span>: <span class="hljs-string">"^3.3.4"</span>,
+    <span class="hljs-attr">"jsonwebtoken"</span>: <span class="hljs-string">"^9.0.2"</span>,
+    <span class="hljs-attr">"multer"</span>: <span class="hljs-string">"^1.4.5-lts.1"</span>,
+    <span class="hljs-attr">"passport"</span>: <span class="hljs-string">"^0.7.0"</span>,
+    <span class="hljs-attr">"passport-local"</span>: <span class="hljs-string">"^1.0.0"</span>,
+    <span class="hljs-attr">"sharp"</span>: <span class="hljs-string">"^0.33.2"</span>,
+    <span class="hljs-attr">"socket.io"</span>: <span class="hljs-string">"^4.7.4"</span>,
+    <span class="hljs-attr">"validator"</span>: <span class="hljs-string">"^13.11.0"</span>
+  },
+  <span class="hljs-attr">"devDependencies"</span>: {
+    <span class="hljs-attr">"@types/body-parser"</span>: <span class="hljs-string">"^1.19.5"</span>,
+    <span class="hljs-attr">"@types/cookie-parser"</span>: <span class="hljs-string">"^1.4.7"</span>,
+    <span class="hljs-attr">"@types/cors"</span>: <span class="hljs-string">"^2.8.17"</span>,
+    <span class="hljs-attr">"@types/express"</span>: <span class="hljs-string">"^4.17.21"</span>,
+    <span class="hljs-attr">"@types/express-session"</span>: <span class="hljs-string">"^1.18.0"</span>,
+    <span class="hljs-attr">"@types/jsonwebtoken"</span>: <span class="hljs-string">"^9.0.6"</span>,
+    <span class="hljs-attr">"@types/multer"</span>: <span class="hljs-string">"^1.4.11"</span>,
+    <span class="hljs-attr">"@types/node"</span>: <span class="hljs-string">"^20.11.25"</span>,
+    <span class="hljs-attr">"@types/passport"</span>: <span class="hljs-string">"^1.0.16"</span>,
+    <span class="hljs-attr">"@types/passport-local"</span>: <span class="hljs-string">"^1.0.38"</span>,
+    <span class="hljs-attr">"dotenv"</span>: <span class="hljs-string">"^16.3.2"</span>,
+    <span class="hljs-attr">"nodemon"</span>: <span class="hljs-string">"^3.0.3"</span>,
+    <span class="hljs-attr">"prisma"</span>: <span class="hljs-string">"^5.10.2"</span>,
+    <span class="hljs-attr">"ts-node"</span>: <span class="hljs-string">"^10.9.2"</span>,
+    <span class="hljs-attr">"typescript"</span>: <span class="hljs-string">"^5.4.2"</span>
+  }
+}
+
+</pre>
+        </td>
+      </tr>
+    
+  </tbody>
+</table>
+
+  </div>
+</body>
+</html>
