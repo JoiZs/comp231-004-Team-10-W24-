@@ -18,6 +18,7 @@ authRouter.post("/register", async (req, res) => {
     city,
     province,
     postal,
+    suburb,
     lat,
     long,
   } = req.body;
@@ -73,6 +74,7 @@ authRouter.post("/register", async (req, res) => {
             postalCode: postal,
             latitude: lat,
             longitude: long,
+            suburb: suburb,
           },
         },
         Profile: {
@@ -94,22 +96,18 @@ authRouter.post("/register", async (req, res) => {
 });
 
 authRouter.post("/login", (req, res, next) => {
-  passport.authenticate(
-    "local",
-    { session: true },
-    (err: any, user: any, info: any) => {
-      if (err) next(err);
-      if (!user) res.json({ ...info, type: "error" });
+  passport.authenticate("local", (err: any, user: any, info: any) => {
+    if (err) next(err);
+    if (!user) res.json({ ...info, type: "error" });
 
-      req.logIn(user, (err) => {
-        if (err) return next(err);
-        return res.json({
-          type: "success",
-          message: "Successfully logged in.",
-        });
+    req.logIn(user, (err) => {
+      if (err) return next(err);
+      return res.json({
+        type: "success",
+        message: "Successfully logged in.",
       });
-    }
-  )(req, res, next);
+    });
+  })(req, res, next);
 });
 
 authRouter.delete("/logout", (req, res, next) => {

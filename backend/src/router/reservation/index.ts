@@ -6,7 +6,7 @@ import { isAuthenticated } from "../../utils/loginverify";
 const reservRouter = Router();
 
 reservRouter.get("/reserv", isAuthenticated, async (req, res) => {
-  const userid = req.context.uid;
+  const userid = req.user.userid;
   const { status } = req.body;
 
   const reservs = await prisma.reservation.findMany({
@@ -24,7 +24,7 @@ reservRouter.get("/reserv", isAuthenticated, async (req, res) => {
 });
 
 reservRouter.patch("/req_updatereserv", isAuthenticated, async (req, res) => {
-  const userid = req.context.uid;
+  const userid = req.user.userid;
   const { resvId, dayRate, petCount, petType, checkIn, checkOut } = req.body;
 
   if (checkIn || checkOut)
@@ -65,7 +65,7 @@ reservRouter.patch("/req_updatereserv", isAuthenticated, async (req, res) => {
 });
 
 reservRouter.patch("/acpt_updatereserv", isAuthenticated, async (req, res) => {
-  const userid = req.context.uid;
+  const userid = req.user.userid;
   const { resvId, status = "pending" } = req.body;
 
   try {
@@ -87,7 +87,7 @@ reservRouter.patch("/acpt_updatereserv", isAuthenticated, async (req, res) => {
 });
 
 reservRouter.post("/create", isAuthenticated, async (req, res) => {
-  const userid = req.context.uid;
+  const userid = req.user.userid;
   const {
     sitterId,
     petCount = 1,
@@ -145,7 +145,7 @@ reservRouter.post("/create", isAuthenticated, async (req, res) => {
 });
 
 reservRouter.patch("/req_cancel", isAuthenticated, async (req, res) => {
-  const userid = req.context.uid;
+  const userid = req.user.userid;
   const { reservId } = req.body;
 
   const checkRes = await prisma.reservation.findFirst({
