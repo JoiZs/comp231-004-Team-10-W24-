@@ -15,25 +15,27 @@ export default function Book() {
       >
         941 Progress Ave, Scarborough M1T3T8
       </a>
-      <div className="mt-3 grid gap-2 grid-cols-[2fr_1fr]">
-        <div>
+      <div className="relative">
+        <div className="mt-3 grid gap-2 grid-cols-[2fr_1fr] rounded-2xl overflow-hidden ">
           <div>
+            <div>
+              <img
+                className="aspect-square object-cover w-full h-full"
+                src={house1}
+              />
+            </div>
+          </div>
+          <div className="grid">
             <img
               className="aspect-square object-cover w-full h-full"
-              src={house1}
+              src={house2}
             />
-          </div>
-        </div>
-        <div className="grid">
-          <img
-            className="aspect-square object-cover w-full h-full"
-            src={house2}
-          />
-          <div className="overflow-hidden">
-            <img
-              className="aspect-square object-cover relative top-2 w-full h-full"
-              src={house3}
-            />
+            <div className="overflow-hidden">
+              <img
+                className="aspect-square object-cover relative top-2 w-full h-full"
+                src={house3}
+              />
+            </div>
           </div>
         </div>
       </div>
