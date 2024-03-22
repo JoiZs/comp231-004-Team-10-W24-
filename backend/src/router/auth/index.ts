@@ -1,8 +1,8 @@
 import { Router } from "express";
 import prisma from "../../utils/prismaClient";
 import { isEmail, isStrongPassword } from "validator";
-import { decryptPw, encryptPw } from "../../utils/pwverify";
-import { assignTk } from "../../utils/authtoken"
+import { encryptPw } from "../../utils/pwverify";
+import passport from "passport";
 
 const authRouter = Router();
 
@@ -93,35 +93,30 @@ authRouter.post("/register", async (req, res) => {
   return res.json({ type: "success", message: "Successfully created a user." });
 });
 
-authRouter.post("/login", async (req, res) => {
-  const { email, password } = req.body;
+authRouter.post("/login", (req, res, next) => {
+  passport.authenticate(
+    "local",
+    { session: true },
+    (err: any, user: any, info: any) => {
+      if (err) next(err);
+      if (!user) res.json({ ...info, type: "error" });
 
-  if (!email || !password)
-    return res.json({ type: "error", message: "Require email & password." });
+      req.logIn(user, (err) => {
+        if (err) return next(err);
+        return res.json({
+          type: "success",
+          message: "Successfully logged in.",
+        });
+      });
+    }
+  )(req, res, next);
+});
 
-  if (!isEmail(email))
-    return res.json({ type: "error", message: "Invalid email address." });
-
-  const checkUser = await prisma.client.findFirst({ where: { email: email } });
-  if (!checkUser)
-    return res.json({
-      type: "error",
-      message: "Account needs to be registered.",
-    });
-
-  if (!(await decryptPw(password, checkUser.password))) {
-    return res.json({ type: "error", message: "Invalid password." });
-  }
-
-  const tk = assignTk({ email: checkUser.email, userid: checkUser.userId });
-
-  res.cookie("__petSitTk", tk, {
-    httpOnly: true,
-    domain: process.env.ENV == "development" ? "localhost" : "",
-    sameSite: process.env.ENV == "development" ? "none" : "lax",
+authRouter.delete("/logout", (req, res, next) => {
+  return req.logOut((err) => {
+    if (err) return next(err);
+    res.redirect("/");
   });
-
-  return res.json({ type: "success", message: "Successfully login." });
 });
 
 export default authRouter;
