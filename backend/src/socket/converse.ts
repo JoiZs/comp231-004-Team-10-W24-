@@ -1,6 +1,5 @@
 import { Server, Socket } from "socket.io";
 import prisma from "../utils/prismaClient";
-import { uploadImg } from "../utils/imgupload";
 
 export const converse = async (
   sender: string,

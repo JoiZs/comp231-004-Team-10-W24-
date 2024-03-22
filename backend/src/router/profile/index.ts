@@ -84,7 +84,12 @@ profileRouter.post("/sitters", async (req, res) => {
             where: { userId: el.receiverId },
           });
 
-          if (!currentUserLoc || !sitterData?.address) {
+          if (
+            !currentUserLoc?.latitude ||
+            !currentUserLoc.longitude ||
+            !sitterData?.address?.latitude ||
+            !sitterData.address.longitude
+          ) {
             return sitterData;
           } else {
             const distance =
