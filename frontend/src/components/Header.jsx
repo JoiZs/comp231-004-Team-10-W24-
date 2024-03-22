@@ -1,34 +1,31 @@
-import { FaSearch } from "react-icons/fa";
+import { useAuth0 } from '@auth0/auth0-react';
 import { Link } from "react-router-dom";
 
 export default function Header() {
-  return (
+  const { isAuthenticated, loginWithRedirect, logout } = useAuth0();
+  return (    
     <header className="bg-slate-200 shadow-md">
       <div className="border-stone-600  flex  justify-between items-center max-w-none mx-auto p-3 px-5 ">
         <h1 className="font-bold text-sm sm:text-xl flex flex-wrap">
+        <Link to={"/"}>
           <span className="text-blue-800">PetCare</span>
+          </Link>
           <span className="text-yellow-600">BnB</span>
         </h1>
-        <form className="bg-slate-100 p-3 rounded-lg flex items-center">
-          <input
-            type="text"
-            placeholder="Search location..."
-            className="bg-transparent focus:outline-none w-30 sm:w-64"
-          ></input>
-          <FaSearch className="bg-transparent"></FaSearch>
-        </form>
         <ul className="flex gap-4">
-          <Link to={"/"}>
-            <li className="text-slate-500 hover:underline">Home</li>
-          </Link>
-          <li className="text-slate-500 hover:underline">About</li>
-
-          <Link to={"/login"}>
-            <li className="text-slate-500 hover:underline">Log In</li>
-          </Link>
-          <Link to={"/Register"}>
-            <li className="text-slate-500 hover:underline">Register</li>
-          </Link>
+          <li>
+          {isAuthenticated ? (
+              <>
+                <Link to="/reservations">Reservations</Link>
+                <Link to="/profile">Profile</Link>
+              </>
+            ) : (
+              <button onClick={() => loginWithRedirect()}>Log in</button>
+            )}
+            {isAuthenticated && (
+              <button onClick={() => logout({ returnTo: window.location.origin })}>Logout</button>
+            )}
+          </li>
         </ul>
       </div>
     </header>

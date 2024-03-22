@@ -1,8 +1,6 @@
-
 import { BrowserRouter, Routes, Route } from 'react-router-dom';
 import { ChakraProvider } from '@chakra-ui/react';
 import './App.css'
-
 
 import Registration from './pages/registration'
 import Profile_sitter from './pages/profile_sitter';
@@ -11,8 +9,6 @@ import Header from "./components/Header";
 import Home from "./pages/Home";
 import Book from "./pages/Book";
 import Login from './pages/login';
-
-
 
 function App() {
   return (
