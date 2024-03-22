@@ -124,10 +124,11 @@ export default class Registration extends Component {
     console.log(this.state.lat);
     console.log(this.state.long);
 
+    //JSON object
     const newClient = {
-      email: this.state.email,
-      password: this.state.password,
       userType: this.state.userType,
+      email: this.state.email,
+      password: this.state.password,      
       firstname: this.state.firstname,
       lastname: this.state.lastname,
       street: this.state.street,
@@ -135,8 +136,8 @@ export default class Registration extends Component {
       province: this.state.province,
       postal: this.state.postal,
       suburb: this.state.suburb,
-      lat: this.state.lat,
-      long: this.state.long,
+      lat: parseFloat(this.state.lat),
+      long: parseFloat(this.state.long),
     };
 
     await axios
@@ -261,8 +262,8 @@ render(){
           </FormControl>
           <RadioGroup onChange={this.onChangeUserType} value={this.state.userType} mt={4}>
             <Stack direction="row">
-              <Radio value="sitter">Pet Sitter</Radio>
-              <Radio value="owner">Pet Owner</Radio>
+              <Radio value="Sitter">Pet Sitter</Radio>
+              <Radio value="Owner">Pet Owner</Radio>
             </Stack>
           </RadioGroup>
           <Stack direction="row" spacing={4} align="center" justify="center" mt={4}>
