@@ -22,9 +22,7 @@ export default function Header() {
             <li className="text-slate-500 hover:underline">Home</li>
           </Link>
           <li className="text-slate-500 hover:underline">About</li>
-          <Link to={"/signup"}>
-            <li className="text-slate-500 hover:underline">SignUp</li>
-          </Link>
+
           <Link to={"/login"}>
             <li className="text-slate-500 hover:underline">Log In</li>
           </Link>

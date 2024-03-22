@@ -7,7 +7,7 @@ import house4 from "../assets/house4.jpg";
 export default function Book() {
   return (
     <div className="mt-4 bg-gray-100 max-w-none mx-auto px-8 p-4">
-      <h1 className="mb-2 text-3xl">Arianna's Pet Friendly Home</h1>
+      <h1 className="mb-2 text-3xl">Arianna's Pet-Friendly Home</h1>
       <a
         className="bock font-semibold underline"
         target="_blank"
