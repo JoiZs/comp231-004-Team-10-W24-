@@ -7,6 +7,7 @@ import passport from "passport";
 const authRouter = Router();
 
 authRouter.post("/register", async (req, res) => {
+  console.log("Register route hit");
   // body required from client's side
   const {
     userType,
@@ -53,11 +54,14 @@ authRouter.post("/register", async (req, res) => {
     where: { email: email },
   });
 
+  // eslint-disable-next-line no-extra-boolean-cast
   if (!!checkUser)
     return res.json({
       type: "error",
       message: "User with email already exists.",
     });
+
+    
 
   await prisma.client
     .create({
@@ -96,7 +100,7 @@ authRouter.post("/register", async (req, res) => {
 });
 
 authRouter.post("/login", (req, res, next) => {
-  passport.authenticate("local", (err: any, user: any, info: any) => {
+  passport.authenticate("local", (err: AuthError, user: AuthUser, info: AuthInfo) => {
     if (err) next(err);
     if (!user) res.json({ ...info, type: "error" });
 
@@ -110,11 +114,30 @@ authRouter.post("/login", (req, res, next) => {
   })(req, res, next);
 });
 
+// interfaces for err, user, and info
+interface AuthError {
+  message: string;
+  // Add other properties as needed
+ }
+ 
+ interface AuthUser {
+  id: number;
+  email: string;
+  // Add other properties as needed
+ }
+ 
+ interface AuthInfo {
+  message: string;
+  // Add other properties as needed
+ }
+
 authRouter.delete("/logout", (req, res, next) => {
   return req.logOut((err) => {
     if (err) return next(err);
     res.redirect("/");
   });
 });
+
+
 
 export default authRouter;

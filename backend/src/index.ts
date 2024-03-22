@@ -43,7 +43,8 @@ import passport from "passport";
   // Middleware
   app.use(
     cors({
-      origin: process.env.CLIENT_HOST,
+      //origin: process.env.CLIENT_HOST,
+      origin: 'http://localhost:5173',
       credentials: true,
     })
   );

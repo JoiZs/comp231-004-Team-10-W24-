@@ -153,6 +153,7 @@ profileRouter.patch(
         where: { Profile: { userUserId: req.user.userid } },
       });
 
+      // eslint-disable-next-line no-extra-boolean-cast
       if (!!checkImg) {
         deleteImg(checkImg.img);
       }
