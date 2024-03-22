@@ -34,16 +34,16 @@ model Client {
 }
 
 model Address {
-  addressId  String @id @default(uuid())
-  street     String
-  city       String
-  province   String
-  postalCode String
-  suburb     String
-  latitude   Float
-  longitude  Float
-  User       Client @relation(fields: [userUserId], references: [userId])
-  userUserId String @unique
+  addressId  String  @id @default(uuid())
+  street     String?
+  city       String?
+  province   String?
+  postalCode String?
+  suburb     String?
+  latitude   Float?
+  longitude  Float?
+  User       Client  @relation(fields: [userUserId], references: [userId])
+  userUserId String  @unique
 }
 
 model Media {
