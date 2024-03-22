@@ -39,6 +39,7 @@ model Address {
   city       String
   province   String
   postalCode String
+  suburb     String
   latitude   Float
   longitude  Float
   User       Client @relation(fields: [userUserId], references: [userId])
@@ -53,27 +54,27 @@ model Media {
 }
 
 model Profile {
-  profileId         String   @id @default(uuid())
+  profileId         String    @id @default(uuid())
   img               Media?
-  availabilityStart DateTime @default(now())
-  availabilityEnd   DateTime @default(now())
-  availabilitySlot  Int      @default(0)
+  availabilityStart DateTime? @default(now())
+  availabilityEnd   DateTime? @default(now())
+  availabilitySlot  Int?      @default(0)
   profileType       String
   petType           String[]
-  User              Client   @relation(fields: [userUserId], references: [userId])
-  userUserId        String   @unique
+  User              Client    @relation(fields: [userUserId], references: [userId])
+  userUserId        String    @unique
 }
 
 model Review {
-  reviewId   String   @id @default(uuid())
+  reviewId   String    @id @default(uuid())
   rating     Int
   comment    String
-  givenBy    Client   @relation("reviewsGivenBy", fields: [givenById], references: [userId])
-  receiver   Client   @relation("reviewsReceived", fields: [receiverId], references: [userId])
+  givenBy    Client    @relation("reviewsGivenBy", fields: [givenById], references: [userId])
+  receiver   Client    @relation("reviewsReceived", fields: [receiverId], references: [userId])
   givenById  String
   receiverId String
-  createdAt  DateTime @default(now())
-  updatedAt  DateTime @updatedAt
+  createdAt  DateTime? @default(now())
+  updatedAt  DateTime? @updatedAt
 }
 
 model Reservation {
@@ -89,6 +90,8 @@ model Reservation {
   status     String
   ratePerDay Int
   ChatRoom   ChatRoom?
+  createdAt  DateTime  @default(now())
+  updatedAt  DateTime  @updatedAt
 }
 
 model ChatRoom {

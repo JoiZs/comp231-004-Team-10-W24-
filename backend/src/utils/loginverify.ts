@@ -3,7 +3,7 @@ import { Strategy } from "passport-local";
 import isEmail from "validator/lib/isEmail";
 import prisma from "./prismaClient";
 import { decryptPw } from "./pwverify";
-import { Express, NextFunction, Response, Request } from "express";
+import { Express, NextFunction, Response, Request, Handler } from "express";
 
 export const passportInit = (app: Express) => {
   app.use(passport.initialize());
@@ -63,4 +63,15 @@ export function isAuthenticated(
 ): Response | void {
   if (req.user) return next();
   else return res.json({ type: "error", message: "You need to login first." });
+}
+
+export function onlyForHandshake(middleware: Handler) {
+  return (req: any, res: Response, next: NextFunction) => {
+    const isHandshake = req._query.sid === undefined;
+    if (isHandshake) {
+      middleware(req, res, next);
+    } else {
+      next();
+    }
+  };
 }

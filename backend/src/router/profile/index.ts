@@ -1,14 +1,14 @@
 import { Router } from "express";
 import prisma from "../../utils/prismaClient";
 import { excludeEntry } from "../../utils/excludefieldprisma";
-import { Client } from "@prisma/client";
 import { isDate } from "validator";
 import { deleteImg, resizeImg, uploadImg } from "../../utils/imgupload";
 import { isAuthenticated } from "../../utils/loginverify";
+import { getDistance } from "geolib";
 
 const profileRouter = Router();
 
-profileRouter.get("/me", async (req, res) => {
+profileRouter.get("/me", isAuthenticated, async (req, res) => {
   const user = req.user;
 
   if (!user) return res.json({ type: "error", message: "Unauthorized user." });
@@ -18,9 +18,13 @@ profileRouter.get("/me", async (req, res) => {
     include: {
       Profile: true,
       address: true,
-      reviewReceived: user.userType == "sitter" && true,
-      followedBy: user.userType == "sitter" && true,
-      following: user.userType == "owner" && true,
+      reviewReceived: user.userType == "Sitter" && true,
+      followedBy: user.userType == "Sitter" && {
+        select: { userId: true, firstname: true, lastname: true },
+      },
+      following: user.userType == "Owner" && {
+        select: { userId: true, firstname: true, lastname: true },
+      },
     },
   });
 
@@ -28,43 +32,102 @@ profileRouter.get("/me", async (req, res) => {
 });
 
 profileRouter.post("/sitters", async (req, res) => {
-  const {
-    pageNum = 1,
-    sortByRating = 4,
-    sortByLocation = false,
-    positionCoords,
-  } = req.body;
+  const userid = req.user?.userid;
 
-  //   const byReviews = await prisma.client.aggregate({
-  //     where: {
-  //       reviewReceived: { every: { rating: { gte: sortByRating } } },
-  //     },
-  //     take: 5,
-  //     skip: (pageNum - 1) * 5,
-  //   });
+  const { pageNum = 1, sortByRating = 4, sortByLocation = false } = req.body;
 
-  //   if (sortByLocation) {
-  //     // getDistance({ positionCoords });
-  // }
+  if (!sortByLocation) {
+    await prisma.review
+      .groupBy({
+        by: ["receiverId"],
+        skip: (pageNum - 1) * 5,
+        _avg: { rating: true },
+        take: 5,
+        having: {
+          rating: {
+            _avg: {
+              gte: sortByRating,
+            },
+          },
+        },
+        orderBy: { receiverId: "desc" },
+      })
+      .then(async (result) => {
+        const restCount = await prisma.review.count({
+          skip: pageNum * 5,
+          where: { rating: { gte: sortByRating } },
+          orderBy: { rating: "desc" },
+        });
 
-  const byLocation = await prisma.$queryRaw<
-    Client[]
-  >`SELECT * FROM "Client" C LEFT JOIN "Review" R ON R."receiverId"=C."userId";`;
-  console.log(byLocation);
-  res.send("hey");
+        const currentUserLoc = userid
+          ? await prisma.address.findFirst({
+              where: { userUserId: userid },
+              select: { latitude: true, longitude: true },
+            })
+          : undefined;
+
+        const sitterPromises = result.map(async (el) => {
+          const sitterData = await prisma.client.findFirst({
+            select: {
+              userId: true,
+              firstname: true,
+              lastname: true,
+              address: { select: { latitude: true, longitude: true } },
+              Profile: {
+                select: {
+                  img: true,
+                  availabilitySlot: true,
+                  petType: true,
+                },
+              },
+            },
+            where: { userId: el.receiverId },
+          });
+
+          if (!currentUserLoc || !sitterData?.address) {
+            return sitterData;
+          } else {
+            const distance =
+              getDistance(
+                {
+                  latitude: currentUserLoc.latitude,
+                  longitude: currentUserLoc.longitude,
+                },
+                {
+                  latitude: sitterData?.address?.latitude,
+                  longitude: sitterData?.address?.longitude,
+                }
+              ) / 1000;
+            return { ...sitterData, distance };
+          }
+        });
+
+        const finalResults = await Promise.all(sitterPromises);
+
+        return res.json({
+          type: "success",
+          message: `Found ${result.length} sitters`,
+          data: {
+            remaining: restCount,
+            sitters: finalResults,
+          },
+        });
+      });
+  }
 });
 
-profileRouter.get("/:stid", (req, res) => {
+profileRouter.get("/:stid", async (req, res) => {
   const { stid } = req.params;
-  const findUser = prisma.client.findFirst({
+  const findUser = await prisma.client.findFirst({
     where: {
       userId: stid,
     },
     include: {
       address: true,
-      followedBy: true,
+      followedBy: {
+        select: { firstname: true, lastname: true },
+      },
       reviewReceived: true,
-      reviewGivenBy: true,
     },
   });
 
@@ -87,15 +150,15 @@ profileRouter.patch(
     try {
       const resizedPath = await resizeImg(req.file);
       const checkImg = await prisma.media.findFirst({
-        where: { Profile: { userUserId: req.context.uid } },
+        where: { Profile: { userUserId: req.user.userid } },
       });
 
+      // eslint-disable-next-line no-extra-boolean-cast
       if (!!checkImg) {
-        console.log(checkImg);
         deleteImg(checkImg.img);
       }
       await prisma.profile.update({
-        where: { userUserId: req.context.uid },
+        where: { userUserId: req.user.userid },
         data: {
           img: {
             upsert: {
@@ -120,7 +183,7 @@ profileRouter.patch(
 profileRouter.patch("/update", isAuthenticated, async (req, res) => {
   const { address, fname, lname, pType } = req.body;
 
-  const userid = req.context.uid;
+  const userid = req.user.userid;
 
   try {
     await prisma.client.update({
@@ -155,7 +218,7 @@ profileRouter.patch("/changeava", isAuthenticated, async (req, res) => {
   if (isDate(avStart) || isDate(avEnd))
     return res.json({ type: "error", message: "Invalid date." });
 
-  const userid = req.context.uid;
+  const userid = req.user.userid;
 
   try {
     await prisma.profile.update({
@@ -177,6 +240,55 @@ profileRouter.patch("/changeava", isAuthenticated, async (req, res) => {
   }
 
   return res.json({ type: "success", message: "Changed the availability." });
+});
+
+profileRouter.patch("/sub", isAuthenticated, async (req, res) => {
+  const user = req.user;
+  const { sitterId } = req.body;
+
+  if (user.userType !== "Owner") {
+    return res.json({
+      type: "error",
+      message: "Only owner can follow sitters.",
+    });
+  }
+  try {
+    await prisma.client.update({
+      where: { userId: user.userid },
+      data: {
+        following: { connect: { userId: sitterId } },
+      },
+    });
+  } catch (error) {
+    if (error)
+      return res.json({ type: "error", message: "Error on following user." });
+  }
+  return res.json({ type: "success", message: "Followed a user." });
+});
+
+profileRouter.patch("/unsub", isAuthenticated, async (req, res) => {
+  const user = req.user;
+  const { sitterId } = req.body;
+
+  if (user.userType !== "Owner") {
+    return res.json({
+      type: "error",
+      message: "Sitters are not allowed to follow.",
+    });
+  }
+
+  try {
+    await prisma.client.update({
+      where: { userId: user.userid },
+      data: {
+        following: { disconnect: { userId: sitterId } },
+      },
+    });
+  } catch (error) {
+    if (error)
+      return res.json({ type: "error", message: "Error on following user." });
+  }
+  return res.json({ type: "success", message: "Unfollowed a user." });
 });
 
 export default profileRouter;

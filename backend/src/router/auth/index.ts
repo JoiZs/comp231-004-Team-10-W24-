@@ -7,6 +7,7 @@ import passport from "passport";
 const authRouter = Router();
 
 authRouter.post("/register", async (req, res) => {
+  console.log("Register route hit");
   // body required from client's side
   const {
     userType,
@@ -18,6 +19,7 @@ authRouter.post("/register", async (req, res) => {
     city,
     province,
     postal,
+    suburb,
     lat,
     long,
   } = req.body;
@@ -52,19 +54,22 @@ authRouter.post("/register", async (req, res) => {
     where: { email: email },
   });
 
+  // eslint-disable-next-line no-extra-boolean-cast
   if (!!checkUser)
     return res.json({
       type: "error",
       message: "User with email already exists.",
     });
 
+    
+
   await prisma.client
     .create({
       data: {
         email: email,
         password: await encryptPw(password),
-        firstname: firstname,
-        lastname: lastname,
+         firstname: firstname,
+         lastname: lastname,
         address: {
           create: {
             street,
@@ -73,6 +78,7 @@ authRouter.post("/register", async (req, res) => {
             postalCode: postal,
             latitude: lat,
             longitude: long,
+            suburb: suburb,
           },
         },
         Profile: {
@@ -94,23 +100,36 @@ authRouter.post("/register", async (req, res) => {
 });
 
 authRouter.post("/login", (req, res, next) => {
-  passport.authenticate(
-    "local",
-    { session: true },
-    (err: any, user: any, info: any) => {
-      if (err) next(err);
-      if (!user) res.json({ ...info, type: "error" });
+  passport.authenticate("local", (err: AuthError, user: AuthUser, info: AuthInfo) => {
+    if (err) next(err);
+    if (!user) res.json({ ...info, type: "error" });
 
-      req.logIn(user, (err) => {
-        if (err) return next(err);
-        return res.json({
-          type: "success",
-          message: "Successfully logged in.",
-        });
+    req.logIn(user, (err) => {
+      if (err) return next(err);
+      return res.json({
+        type: "success",
+        message: "Successfully logged in.",
       });
-    }
-  )(req, res, next);
+    });
+  })(req, res, next);
 });
+
+// interfaces for err, user, and info
+interface AuthError {
+  message: string;
+  // Add other properties as needed
+ }
+ 
+ interface AuthUser {
+  id: number;
+  email: string;
+  // Add other properties as needed
+ }
+ 
+ interface AuthInfo {
+  message: string;
+  // Add other properties as needed
+ }
 
 authRouter.delete("/logout", (req, res, next) => {
   return req.logOut((err) => {
@@ -118,5 +137,7 @@ authRouter.delete("/logout", (req, res, next) => {
     res.redirect("/");
   });
 });
+
+
 
 export default authRouter;

@@ -17,40 +17,69 @@ import cors from "cors";
 import prisma from "./utils/prismaClient";
 import { converse } from "./socket/converse";
 import session from "express-session";
+import { onlyForHandshake, passportInit } from "./utils/loginverify";
 import passport from "passport";
-import { passportInit } from "./utils/loginverify";
 
 (async () => {
   // creating instances
   const app = express();
   const port = process.env.PORT;
   const httpServer = createServer(app);
-  const io = new Server(httpServer, {});
-
-  // Socket IO connection
-  io.on("connection", (socket) => {
-    console.log(socket.request);
-    socket.on("sendMsg", converse);
+  const MemoryStore = new session.MemoryStore();
+  const io = new Server(httpServer, {
+    cors: {
+      origin: process.env.CLIENT_HOST,
+      credentials: true,
+    },
+  });
+  const sessionMW = session({
+    store: MemoryStore,
+    secret: process.env.SESS_SECT!,
+    resave: false,
+    saveUninitialized: true,
+    cookie: { secure: false },
   });
 
   // Middleware
   app.use(
     cors({
-      origin: process.env.ENV == "development" ? "localhost" : "",
+      origin: process.env.CLIENT_HOST,      
       credentials: true,
     })
   );
+  app.use(sessionMW);
   app.use(bodyParser.json());
-  app.use(cookieParser());
-  app.use(
-    session({
-      secret: process.env.SESS_SECT!,
-      resave: false,
-      saveUninitialized: false,
-      cookie: { secure: false },
-    })
-  );
+  app.use(cookieParser(process.env.SESS_SECT!));
   passportInit(app);
+
+  // Socket IO connection
+  io.engine.use(onlyForHandshake(sessionMW));
+  io.engine.use(onlyForHandshake(passport.session()));
+
+  io.use((socket, next) => {
+    console.log(socket.request.user);
+    if (!socket.request.user) {
+      // Emit event to client for redirection or error display
+      socket.emit("unauthorized");
+      return next(new Error("Unauthorized"));
+    }
+    next();
+  });
+
+  io.on("connection", (socket) => {
+    const userid = socket.request.user.userid;
+
+    socket.on("sendMsg", (payload) =>
+      converse(
+        userid,
+        payload.receiver,
+        payload.roomid,
+        payload.msg,
+        io,
+        socket
+      )
+    );
+  });
 
   app.use("/profiles/", express.static("public/data/profiles"));
   app.use("/msgs/", express.static("public/data/messages"));
