@@ -27,8 +27,8 @@ export default class Registration extends Component {
     this.onChangeProvince = this.onChangeProvince.bind(this);
     this.onChangePostal = this.onChangePostal.bind(this);
     this.onChangeSuburb = this.onChangeSuburb.bind(this);
-    //this.onChangeLat = this.onChangeLat.bind(this);
-    //this.onChangeLong = this.onChangeLong.bind(this);
+    this.onChangeLat = this.onChangeLat.bind(this);
+    this.onChangeLong = this.onChangeLong.bind(this);
 
     this.onSubmit = this.onSubmit.bind(this);
 
@@ -44,8 +44,8 @@ export default class Registration extends Component {
       province: "",
       postal: "",
       suburb: "",
-      lat: null,
-      long: null
+      lat: "",
+      long: ""
     };
   }
   onChangeEmail(e) {
@@ -98,34 +98,19 @@ export default class Registration extends Component {
       suburb: e.target.value,
     });
   }
-  // onChangeLat(e) {
-  //   this.setState({
-  //     lat: e.target.value,
-  //   });
-  // }
-  // onChangeLong(e) {
-  //   this.setState({
-  //     long: e.target.value,
-  //   });
-  // }
+  onChangeLat(e) {
+    this.setState({
+      lat: e.target.value,
+    });
+  }
+  onChangeLong(e) {
+    this.setState({
+      long: e.target.value,
+    });
+  }
 
   async onSubmit(e) {
-    e.preventDefault();
-    let coordinates = { lat: "", long: "" };
-    try {
-        const apiKey = import.meta.env.VITE_LOCATIONIQ_API_KEY;   //access .env api key
-        const response = await axios.get(`https://us1.locationiq.com/v1/search?key=${apiKey}&q=Statue%20of%20Liberty,%20New%20York&format=json`);
-        if (response.data.results[0]) {
-          const location = response.data.results[0].geometry.location;
-          coordinates = { lat: location.lat, long: location.lon };
-          this.setState({
-            lat: location.lat,
-            long: location.lon
-          });
-        }
-    } catch (error) {
-        console.error("Geocoding API error:", error);
- }
+    e.preventDefault();    
 
     console.log(this.state.email);
     console.log(this.state.password);
@@ -152,8 +137,8 @@ export default class Registration extends Component {
       province: this.state.province,
       postal: this.state.postal,
       suburb: this.state.suburb,
-      lat: coordinates.lat,
-      long: coordinates.long,
+      lat: parseFloat(this.state.lat),
+      long: parseFloat(this.state.long),
     };
 
     await axios
@@ -260,7 +245,22 @@ render(){
                 onChange={this.onChangeSuburb}
               />
           </FormControl>
-          
+          <FormControl isRequired mt={4}>
+            <FormLabel>Lat</FormLabel>
+            <Input
+                type="lat"
+                value={this.state.lat}
+                onChange={this.onChangeLat}
+              />
+          </FormControl>
+          <FormControl isRequired mt={4}>
+            <FormLabel>Long</FormLabel>
+            <Input
+                type="long"
+                value={this.state.long}
+                onChange={this.onChangeLong}
+              />
+          </FormControl>
           <RadioGroup onChange={this.onChangeUserType} value={this.state.userType} mt={4}>
             <Stack direction="row">
               <Radio value="Sitter">Pet Sitter</Radio>
