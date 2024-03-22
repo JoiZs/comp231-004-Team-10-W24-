@@ -1,75 +1,279 @@
-import React, { useState } from 'react';
-import { useNavigate } from 'react-router-dom'; // Import useNavigate
+import { Component } from "react";
+import axios from 'axios';
+import {
+  ChakraProvider,
+  //extendTheme,
+  Input,
+  Button,
+  Radio,
+  RadioGroup,
+  Stack,
+  Box,
+  FormControl,
+  FormLabel,
+  Heading,
+} from '@chakra-ui/react';
 
-const Registration = () => {
-  const [username, setUsername] = useState('');
-  const [password, setPassword] = useState('');
-  const [role, setRole] = useState('');
+export default class Registration extends Component {
+  constructor(props) {
+    super(props);
+    this.onChangeEmail = this.onChangeEmail.bind(this);
+    this.onChangePassword = this.onChangePassword.bind(this);
+    this.onChangeUserType = this.onChangeUserType.bind(this);
+    this.onChangeFirstName = this.onChangeFirstName.bind(this);
+    this.onChangeLastName = this.onChangeLastName.bind(this);
+    this.onChangeStreet = this.onChangeStreet.bind(this);
+    this.onChangeCity = this.onChangeCity.bind(this);
+    this.onChangeProvince = this.onChangeProvince.bind(this);
+    this.onChangePostal = this.onChangePostal.bind(this);
+    this.onChangeSuburb = this.onChangeSuburb.bind(this);
+    this.onChangeLat = this.onChangeLat.bind(this);
+    this.onChangeLong = this.onChangeLong.bind(this);
 
-  const navigate = useNavigate(); // Get the navigate function
+    this.onSubmit = this.onSubmit.bind(this);
 
-  const handleSubmit = (event) => {
-    event.preventDefault();
-    // Based on the role, navigate to the appropriate page
-    if (role === 'pet-owner') {
-      navigate('/profile_owner');
-    } else if (role === 'pet-sitter') {
-      navigate('/profile_sitter');
-    } else {
-      // Handle the case where no role is selected or an unexpected value is received
-      console.log('Please select a valid role.');
-    }
-  };
+    // state initialization
+    this.state = {
+      email: "",
+      password: "",
+      userType: "",
+      firstname: "",
+      lastname: "",
+      street: "",
+      city: "",
+      province: "",
+      postal: "",
+      suburb: "",
+      lat: "",
+      long: ""
+    };
+  }
+  onChangeEmail(e) {
+    this.setState({
+      email: e.target.value,
+    });
+  }
+  onChangePassword(e) {
+    this.setState({
+      password: e.target.value,
+    });
+  }
+  onChangeUserType(value) {
+    this.setState({
+      userType: value,
+    });
+  }
+  onChangeFirstName(e) {
+    this.setState({
+      firstname: e.target.value,
+    });
+  }
+  onChangeLastName(e) {
+    this.setState({
+      lastname: e.target.value,
+    });
+  }
+  onChangeStreet(e) {
+    this.setState({
+      street: e.target.value,
+    });
+  }
+  onChangeCity(e) {
+    this.setState({
+      city: e.target.value,
+    });
+  }
+  onChangeProvince(e) {
+    this.setState({
+      province: e.target.value,
+    });
+  }
+  onChangePostal(e) {
+    this.setState({
+      postal: e.target.value,
+    });
+  }
+  onChangeSuburb(e) {
+    this.setState({
+      suburb: e.target.value,
+    });
+  }
+  onChangeLat(e) {
+    this.setState({
+      lat: e.target.value,
+    });
+  }
+  onChangeLong(e) {
+    this.setState({
+      long: e.target.value,
+    });
+  }
 
-  // Your form JSX goes here
+  async onSubmit(e) {
+    e.preventDefault();    
+
+    console.log(this.state.email);
+    console.log(this.state.password);
+    console.log(this.state.userType);
+    console.log(this.state.firstname);
+    console.log(this.state.lastname);
+    console.log(this.state.street);
+    console.log(this.state.city);
+    console.log(this.state.province);
+    console.log(this.state.postal);
+    console.log(this.state.suburb);
+    console.log(this.state.lat);
+    console.log(this.state.long);
+
+    //JSON object
+    const newClient = {
+      userType: this.state.userType,
+      email: this.state.email,
+      password: this.state.password,      
+      firstname: this.state.firstname,
+      lastname: this.state.lastname,
+      street: this.state.street,
+      city: this.state.city,      
+      province: this.state.province,
+      postal: this.state.postal,
+      suburb: this.state.suburb,
+      lat: parseFloat(this.state.lat),
+      long: parseFloat(this.state.long),
+    };
+
+    await axios
+    .post("http://localhost:4000/auth/register", newClient, {withCredentials:true})
+    .then((res) => {
+      console.log(res.data)
+    })
+    .catch((err) => {
+      console.log(err)
+    });
+
+    this.setState ({
+      email: "",
+      password: "",
+      userType: "",
+      firstname: "",
+      lastname: "",
+      street: "",
+      city: "",
+      province: "",
+      postal: "",
+      suburb: "",
+      lat: "",
+      long: ""   
+    });
+  
+  }
+
+render(){
   return (
-    <div className="p-5">
-      {/* Form content */}
-      <form onSubmit={handleSubmit}>
-        {/* Username, Password inputs */}
-        
-        {/* Role Selection */}
-        <fieldset className="mb-4">
-          <legend className="text-sm font-medium text-gray-700">Role</legend>
-          <div className="mt-2 flex items-center">
-            <input 
-              id="pet-sitter" 
-              type="radio" 
-              name="role" 
-              value="pet-sitter" 
-              onChange={(e) => setRole(e.target.value)}
-              className="focus:ring-blue-500 h-4 w-4 text-blue-600 border-gray-300"
+    <ChakraProvider>
+      <Box className="registration-container" p={5}>
+        <Heading as="h2" size="lg" mb={5}>Account Registration</Heading>
+        <form onSubmit={this.onSubmit}>
+          <FormControl isRequired>
+            <FormLabel>Email</FormLabel>
+            <Input 
+              type="email"
+              value={this.state.email}
+              onChange={this.onChangeEmail}
             />
-            <label htmlFor="pet-sitter" className="ml-3 block text-sm font-medium text-gray-700">
-              Pet Sitter
-            </label>
-          </div>
-          <div className="mt-2 flex items-center">
-            <input 
-              id="pet-owner" 
-              type="radio" 
-              name="role" 
-              value="pet-owner" 
-              onChange={(e) => setRole(e.target.value)}
-              className="focus:ring-blue-500 h-4 w-4 text-blue-600 border-gray-300"
+          </FormControl>
+          <FormControl isRequired mt={4}>
+            <FormLabel>Password</FormLabel>
+            <Input
+              type="password"
+              value={this.state.password}
+              onChange={this.onChangePassword}
             />
-            <label htmlFor="pet-owner" className="ml-3 block text-sm font-medium text-gray-700">
-              Pet Owner (Customer)
-            </label>
-          </div>
-        </fieldset>
-        
-        {/* Submit button */}
-        <div className="flex justify-center items-center space-x-4 mt-4">
-          <button 
-            type="submit" 
-            className="px-4 py-2 bg-blue-500 text-white rounded-md hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-opacity-50">
-            Create Account
-          </button>
-        </div>
-      </form>
-    </div>
+          </FormControl>
+          <FormControl isRequired mt={4}>
+            <FormLabel>First Name</FormLabel>
+            <Input
+              type="firstname"
+              value={this.state.firstname}
+              onChange={this.onChangeFirstName}
+            />
+          </FormControl>
+          <FormControl isRequired mt={4}>
+            <FormLabel>Last Name</FormLabel>
+            <Input
+              type="lastname"
+              value={this.state.lastname}
+              onChange={this.onChangeLastName}
+            />
+          </FormControl>
+          <FormControl isRequired mt={4}>
+            <FormLabel>Street Name</FormLabel>
+            <Input
+                type="street"
+                value={this.state.street}
+                onChange={this.onChangeStreet}
+              />
+          </FormControl>
+          <FormControl isRequired mt={4}>
+            <FormLabel>City</FormLabel>
+            <Input
+                type="city"
+                value={this.state.city}
+                onChange={this.onChangeCity}
+              />
+          </FormControl>
+          <FormControl isRequired mt={4}>
+            <FormLabel>Province</FormLabel>
+            <Input
+                type="province"
+                value={this.state.province}
+                onChange={this.onChangeProvince}
+              />
+          </FormControl>
+          <FormControl isRequired mt={4}>
+            <FormLabel>Postal Code</FormLabel>
+            <Input
+                type="postal"
+                value={this.state.postal}
+                onChange={this.onChangePostal}
+              />
+          </FormControl>
+          <FormControl isRequired mt={4}>
+            <FormLabel>Suburb</FormLabel>
+            <Input
+                type="suburb"
+                value={this.state.suburb}
+                onChange={this.onChangeSuburb}
+              />
+          </FormControl>
+          <FormControl isRequired mt={4}>
+            <FormLabel>Lat</FormLabel>
+            <Input
+                type="lat"
+                value={this.state.lat}
+                onChange={this.onChangeLat}
+              />
+          </FormControl>
+          <FormControl isRequired mt={4}>
+            <FormLabel>Long</FormLabel>
+            <Input
+                type="long"
+                value={this.state.long}
+                onChange={this.onChangeLong}
+              />
+          </FormControl>
+          <RadioGroup onChange={this.onChangeUserType} value={this.state.userType} mt={4}>
+            <Stack direction="row">
+              <Radio value="Sitter">Pet Sitter</Radio>
+              <Radio value="Owner">Pet Owner</Radio>
+            </Stack>
+          </RadioGroup>
+          <Stack direction="row" spacing={4} align="center" justify="center" mt={4}>
+            <Button type="submit" colorScheme="blue">Create Account</Button>
+            <Button colorScheme="teal">Login</Button>
+          </Stack>
+        </form>
+      </Box>
+    </ChakraProvider>
   );
-};
-
-export default Registration;
+}
+}
