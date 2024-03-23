@@ -5,7 +5,7 @@ import { isAuthenticated } from "../../utils/loginverify";
 
 const reservRouter = Router();
 
-reservRouter.get("/reserv", isAuthenticated, async (req, res) => {
+reservRouter.post("/reserv", isAuthenticated, async (req, res) => {
   const userid = req.user.userid;
   const { status } = req.body;
 
@@ -13,6 +13,11 @@ reservRouter.get("/reserv", isAuthenticated, async (req, res) => {
     where: {
       OR: [{ ownerId: userid }, { sitterId: userid }],
       ...(status && { status: status }),
+    },
+    orderBy: { updatedAt: "desc" },
+    include: {
+      owner: { select: { firstname: true, lastname: true, email: true } },
+      sitter: { select: { firstname: true, lastname: true, email: true } },
     },
   });
 
@@ -61,7 +66,13 @@ reservRouter.patch("/req_updatereserv", isAuthenticated, async (req, res) => {
         status: "pending",
       },
     });
-  } catch (error) {}
+  } catch (error) {
+    console.log(error);
+    return res.json({
+      type: "error",
+      message: "Internal Server Error",
+    });
+  }
 });
 
 reservRouter.patch("/acpt_updatereserv", isAuthenticated, async (req, res) => {

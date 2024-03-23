@@ -9,6 +9,7 @@ import Home from "./pages/Home";
 import Book from "./pages/Book";
 import Login from "./pages/login";
 import { RegisterCtxProvider, AuthCtxProvider } from "./context";
+import Reservation from "./pages/reservation";
 
 function App() {
   return (
@@ -20,11 +21,15 @@ function App() {
             <div className="h-full flex-1 flex justify-center">
               <Routes>
                 <Route path="/register" element={<Registration />} />
-                <Route path="/profile_sitter/:uid" element={<Profile_sitter />} />
+                <Route
+                  path="/profile_sitter/:uid"
+                  element={<Profile_sitter />}
+                />
                 <Route path="/me" element={<AccountProfile />} />
                 <Route path="/" element={<Home />}></Route>
                 <Route path="/book" element={<Book />}></Route>
                 <Route path="/login" element={<Login />}></Route>
+                <Route path="/reservations" element={<Reservation />} />
               </Routes>
             </div>
           </BrowserRouter>

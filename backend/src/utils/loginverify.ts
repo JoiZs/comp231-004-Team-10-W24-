@@ -54,7 +54,6 @@ export function isAuthenticated(
   res: Response,
   next: NextFunction
 ): Response | void {
-  console.log(req.user, req.session);
   if (req.user) return next();
   else return res.json({ type: "error", message: "You need to login first." });
 }
