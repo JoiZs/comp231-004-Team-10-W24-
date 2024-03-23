@@ -10,3 +10,9 @@ button.green {
   background-color: "#028A0F";
   @apply bg-green p-2 w-full text-white rounded-lg;
 }
+
+#root {
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+}

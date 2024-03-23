@@ -22,7 +22,7 @@ import {
   Flex,
 } from "@chakra-ui/react";
 
-const Profile_Sitter = () => {
+const AccountProfile = () => {
   // Form state management here (e.g., useForm hook or useState)
   // ...
 
@@ -30,9 +30,9 @@ const Profile_Sitter = () => {
   const { isOpen, onOpen, onClose } = useDisclosure();
 
   return (
-    <Box className="sitter-container" p={5}>
+    <Box className="owner-container" p={5}>
       <Heading as="h2" size="lg" mb={5}>
-        Pet Sitter Registration
+        Pet Owner Registration
       </Heading>
       <Flex
         direction={{ base: "column", md: "row" }}
@@ -68,6 +68,10 @@ const Profile_Sitter = () => {
           <FormControl id="province" display="flex" alignItems="left">
             <FormLabel>Province:</FormLabel>
             <Input type="text" placeholder="Enter your Province" />
+          </FormControl>
+          <FormControl id="country" display="flex" alignItems="left">
+            <FormLabel>Country:</FormLabel>
+            <Input type="text" placeholder="Enter your Country" />
           </FormControl>
           <FormControl id="country" display="flex" alignItems="left">
             <FormLabel>Country:</FormLabel>
@@ -142,4 +146,4 @@ const Profile_Sitter = () => {
   );
 };
 
-export default Profile_Sitter;
+export default AccountProfile;
