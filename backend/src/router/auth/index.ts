@@ -75,7 +75,7 @@ authRouter.post("/register", async (req, res) => {
             postalCode: postal,
             suburb,
             latitude: lat,
-            longitude: long,            
+            longitude: long,
           },
         },
         Profile: {
@@ -123,12 +123,10 @@ interface AuthError {
 interface AuthUser {
   id: number;
   email: string;
-  // Add other properties as needed
 }
 
 interface AuthInfo {
   message: string;
-  // Add other properties as needed
 }
 
 authRouter.delete("/logout", (req, res, next) => {

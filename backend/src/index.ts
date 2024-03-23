@@ -25,7 +25,6 @@ import passport from "passport";
   const app = express();
   const port = process.env.PORT;
   const httpServer = createServer(app);
-  const MemoryStore = new session.MemoryStore();
   const io = new Server(httpServer, {
     cors: {
       origin: process.env.CLIENT_HOST,
@@ -33,21 +32,25 @@ import passport from "passport";
     },
   });
   const sessionMW = session({
-    store: MemoryStore,
     secret: process.env.SESS_SECT!,
     resave: false,
-    saveUninitialized: true,
-    cookie: { secure: false },
+    saveUninitialized: false,
+    cookie: {
+      secure: false,
+      sameSite: "lax",
+    },
   });
 
   // Middleware
   app.use(
     cors({
-      origin: process.env.CLIENT_HOST,      
+      origin: process.env.CLIENT_HOST,
       credentials: true,
     })
   );
   app.use(sessionMW);
+  app.use(passport.initialize());
+  app.use(passport.session());
   app.use(bodyParser.json());
   app.use(cookieParser(process.env.SESS_SECT!));
   passportInit(app);

@@ -28,7 +28,11 @@ profileRouter.get("/me", isAuthenticated, async (req, res) => {
     },
   });
 
-  return res.json(excludeEntry(findUser, ["password"]));
+  return res.json({
+    data: excludeEntry(findUser, ["password"]),
+    type: "success",
+    message: "Authenticated.",
+  });
 });
 
 profileRouter.post("/sitters", async (req, res) => {
@@ -90,7 +94,7 @@ profileRouter.post("/sitters", async (req, res) => {
             !sitterData?.address?.latitude ||
             !sitterData.address.longitude
           ) {
-            return sitterData;
+            return { ...sitterData, avg: el._avg };
           } else {
             const distance =
               getDistance(
@@ -103,7 +107,7 @@ profileRouter.post("/sitters", async (req, res) => {
                   longitude: sitterData?.address?.longitude,
                 }
               ) / 1000;
-            return { ...sitterData, distance };
+            return { ...sitterData, distance, avg: el._avg };
           }
         });
 

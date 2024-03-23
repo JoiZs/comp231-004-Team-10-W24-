@@ -6,9 +6,6 @@ import { decryptPw } from "./pwverify";
 import { Express, NextFunction, Response, Request, Handler } from "express";
 
 export const passportInit = (app: Express) => {
-  app.use(passport.initialize());
-  app.use(passport.session());
-
   passport.use(
     new Strategy({ usernameField: "email" }, async (email, password, cb) => {
       if (!email || !password)
@@ -44,15 +41,11 @@ export const passportInit = (app: Express) => {
   );
 
   passport.serializeUser((user, cb) => {
-    process.nextTick(() => {
-      return cb(null, user);
-    });
+    cb(null, user);
   });
 
   passport.deserializeUser((user: Express.User, cb) => {
-    process.nextTick(() => {
-      return cb(null, user);
-    });
+    cb(null, user);
   });
 };
 
@@ -61,6 +54,7 @@ export function isAuthenticated(
   res: Response,
   next: NextFunction
 ): Response | void {
+  console.log(req.user, req.session);
   if (req.user) return next();
   else return res.json({ type: "error", message: "You need to login first." });
 }
