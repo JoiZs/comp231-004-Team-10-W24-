@@ -10,6 +10,7 @@ import {
 } from "@prisma/client";
 import { encryptPw } from "../src/utils/pwverify";
 import { randomUUID } from "crypto";
+import "dotenv/config";
 
 const prisma = new PrismaClient();
 

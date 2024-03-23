@@ -3,6 +3,7 @@ import prisma from "../../utils/prismaClient";
 import { isEmail, isStrongPassword } from "validator";
 import { encryptPw } from "../../utils/pwverify";
 import passport from "passport";
+import { isAuthenticated } from "../../utils/loginverify";
 
 const authRouter = Router();
 
@@ -129,10 +130,10 @@ interface AuthInfo {
   message: string;
 }
 
-authRouter.delete("/logout", (req, res, next) => {
+authRouter.delete("/logout", isAuthenticated, (req, res, next) => {
   return req.logOut((err) => {
     if (err) return next(err);
-    res.redirect("/");
+    return res.json({ type: "success", message: "Logout." });
   });
 });
 

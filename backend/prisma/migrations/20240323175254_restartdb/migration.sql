@@ -1,6 +1,3 @@
--- CreateExtension
-CREATE EXTENSION IF NOT EXISTS "postgis";
-
 -- CreateTable
 CREATE TABLE "Client" (
     "userId" TEXT NOT NULL,
@@ -17,12 +14,13 @@ CREATE TABLE "Client" (
 -- CreateTable
 CREATE TABLE "Address" (
     "addressId" TEXT NOT NULL,
-    "street" TEXT NOT NULL,
-    "city" TEXT NOT NULL,
-    "province" TEXT NOT NULL,
-    "postalCode" TEXT NOT NULL,
-    "latitude" DOUBLE PRECISION NOT NULL,
-    "longitude" DOUBLE PRECISION NOT NULL,
+    "street" TEXT,
+    "city" TEXT,
+    "province" TEXT,
+    "postalCode" TEXT,
+    "suburb" TEXT,
+    "latitude" DOUBLE PRECISION,
+    "longitude" DOUBLE PRECISION,
     "userUserId" TEXT NOT NULL,
 
     CONSTRAINT "Address_pkey" PRIMARY KEY ("addressId")
@@ -40,9 +38,9 @@ CREATE TABLE "Media" (
 -- CreateTable
 CREATE TABLE "Profile" (
     "profileId" TEXT NOT NULL,
-    "availabilityStart" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
-    "availabilityEnd" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
-    "availabilitySlot" INTEGER NOT NULL DEFAULT 0,
+    "availabilityStart" TIMESTAMP(3) DEFAULT CURRENT_TIMESTAMP,
+    "availabilityEnd" TIMESTAMP(3) DEFAULT CURRENT_TIMESTAMP,
+    "availabilitySlot" INTEGER DEFAULT 0,
     "profileType" TEXT NOT NULL,
     "petType" TEXT[],
     "userUserId" TEXT NOT NULL,
@@ -57,8 +55,8 @@ CREATE TABLE "Review" (
     "comment" TEXT NOT NULL,
     "givenById" TEXT NOT NULL,
     "receiverId" TEXT NOT NULL,
-    "createdAt" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
-    "updatedAt" TIMESTAMP(3) NOT NULL,
+    "createdAt" TIMESTAMP(3) DEFAULT CURRENT_TIMESTAMP,
+    "updatedAt" TIMESTAMP(3),
 
     CONSTRAINT "Review_pkey" PRIMARY KEY ("reviewId")
 );
@@ -74,6 +72,8 @@ CREATE TABLE "Reservation" (
     "checkOut" TIMESTAMP(3) NOT NULL,
     "status" TEXT NOT NULL,
     "ratePerDay" INTEGER NOT NULL,
+    "createdAt" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    "updatedAt" TIMESTAMP(3) NOT NULL,
 
     CONSTRAINT "Reservation_pkey" PRIMARY KEY ("reserveId")
 );
@@ -82,6 +82,8 @@ CREATE TABLE "Reservation" (
 CREATE TABLE "ChatRoom" (
     "roomId" TEXT NOT NULL,
     "reservationId" TEXT NOT NULL,
+    "createdAt" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    "updatedAt" TIMESTAMP(3) NOT NULL,
 
     CONSTRAINT "ChatRoom_pkey" PRIMARY KEY ("roomId")
 );
@@ -93,6 +95,7 @@ CREATE TABLE "Message" (
     "type" TEXT NOT NULL,
     "path" TEXT,
     "messageText" TEXT,
+    "createdAt" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
 
     CONSTRAINT "Message_pkey" PRIMARY KEY ("chatId")
 );

@@ -1,4 +1,4 @@
-import React, { useContext, useState } from "react";
+import { useContext, useState } from "react";
 import { Link } from "react-router-dom";
 import axios from "axios";
 import { AuthCtx } from "../context";
@@ -8,7 +8,7 @@ import { useNavigate } from "react-router-dom";
 const Login = () => {
   const [username, setUsername] = useState("");
   const [password, setPassword] = useState("");
-  const { isAuth, setIsAuth } = useContext(AuthCtx);
+  const { _isAuth, setIsAuth } = useContext(AuthCtx);
   const navigate = useNavigate();
 
   const toast = useToast();
@@ -30,12 +30,7 @@ const Login = () => {
           onCloseComplete: async () => {
             if (res.data.type == "success") {
               setIsAuth(true);
-              // navigate("/");
-              await axios
-                .get("http://localhost:4000/profile/me", {
-                  withCredentials: true,
-                })
-                .then((rrs) => console.log(rrs));
+              navigate("/");
             }
           },
         });

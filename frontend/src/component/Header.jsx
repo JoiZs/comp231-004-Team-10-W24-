@@ -1,11 +1,24 @@
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import { useContext } from "react";
 import { AuthCtx } from "../context";
+import axios from "axios";
 
 export default function Header() {
   const { isAuth, setIsAuth } = useContext(AuthCtx);
+  const navigate = useNavigate();
 
-  console.log(isAuth);
+  const LogoutHandler = async () => {
+    await axios
+      .delete("http://localhost:4000/auth/logout", {
+        withCredentials: true,
+      })
+      .then((res) => {
+        if (res.data) {
+          setIsAuth(false);
+          navigate("/");
+        }
+      });
+  };
 
   return (
     <header className="bg-slate-200 shadow-md">
@@ -25,13 +38,7 @@ export default function Header() {
           ) : (
             <Link to="/login">Login</Link>
           )}
-          {isAuth && (
-            <button
-              onClick={() => logout({ returnTo: window.location.origin })}
-            >
-              Logout
-            </button>
-          )}
+          {isAuth && <button onClick={LogoutHandler}>Logout</button>}
         </div>
       </div>
     </header>

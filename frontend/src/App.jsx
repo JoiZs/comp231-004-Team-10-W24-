@@ -4,7 +4,7 @@ import { ChakraProvider } from "@chakra-ui/react";
 import Registration from "./pages/registration";
 import Profile_sitter from "./pages/profile_sitter";
 import AccountProfile from "./pages/accountprofile";
-import Header from "./components/Header";
+import Header from "./component/Header";
 import Home from "./pages/Home";
 import Book from "./pages/Book";
 import Login from "./pages/login";
@@ -20,7 +20,7 @@ function App() {
             <div className="h-full flex-1 flex justify-center">
               <Routes>
                 <Route path="/register" element={<Registration />} />
-                <Route path="/profile_sitter" element={<Profile_sitter />} />
+                <Route path="/profile_sitter/:uid" element={<Profile_sitter />} />
                 <Route path="/me" element={<AccountProfile />} />
                 <Route path="/" element={<Home />}></Route>
                 <Route path="/book" element={<Book />}></Route>

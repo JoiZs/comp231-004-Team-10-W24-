@@ -12,9 +12,9 @@ import {
   Avatar,
 } from "@chakra-ui/react";
 import { StarIcon } from "@chakra-ui/icons";
-import React from "react";
+import { Link } from "react-router-dom";
 
-const Sitter = ({ Name, Ava, PetType, Rating, Distance, Img }) => {
+const Sitter = ({ Name, Ava, PetType, Rating, Distance, Img, uid }) => {
   return (
     <Card
       w={"full"}
@@ -40,9 +40,9 @@ const Sitter = ({ Name, Ava, PetType, Rating, Distance, Img }) => {
         <CardBody gap={2}>
           <HStack justifyContent={"space-between"}>
             <Heading size="md">{Name}</Heading>
-            <HStack gap={0}>
-              <StarIcon fontSize={"10"} />
-              <Text>{Number(Rating).toFixed(1)}</Text>
+            <HStack fontSize={"14"} color={"GrayText"} gap={0}>
+              <StarIcon />
+              <Text padding={2}>{Number(Rating).toFixed(1)}</Text>
             </HStack>
           </HStack>
           <Text color={"GrayText"} py="1" fontSize={"small"}>
@@ -60,7 +60,13 @@ const Sitter = ({ Name, Ava, PetType, Rating, Distance, Img }) => {
           </HStack>
         </CardBody>
         <CardFooter justifyContent={"flex-end"}>
-          <Button size={"sm"} variant="solid" colorScheme="blue">
+          <Button
+            to={`/profile_sitter/${uid}`}
+            as={Link}
+            size={"sm"}
+            variant="solid"
+            colorScheme="blue"
+          >
             See Profile
           </Button>
         </CardFooter>

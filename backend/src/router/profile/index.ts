@@ -133,10 +133,28 @@ profileRouter.get("/:stid", async (req, res) => {
     },
     include: {
       address: true,
+      Profile: {
+        select: {
+          availabilitySlot: true,
+          img: true,
+          availabilityStart: true,
+          availabilityEnd: true,
+        },
+      },
       followedBy: {
         select: { firstname: true, lastname: true },
       },
-      reviewReceived: true,
+      _count: { select: { reviewReceived: true } },
+      reviewReceived: {
+        select: {
+          comment: true,
+          rating: true,
+          createdAt: true,
+          givenBy: { select: { firstname: true, lastname: true } },
+        },
+        take: 3,
+        orderBy: { rating: "desc" },
+      },
     },
   });
 

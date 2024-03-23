@@ -12,7 +12,7 @@ import {
 import { Button, ButtonGroup, useBoolean } from "@chakra-ui/react";
 import { Flex, VStack } from "@chakra-ui/react";
 import { ChevronRightIcon, ChevronLeftIcon } from "@chakra-ui/icons";
-import Sitter from "../components/Sitter";
+import Sitter from "../component/Sitter";
 import { useContext, useEffect, useState } from "react";
 import axios from "axios";
 import { AuthCtx } from "../context";
@@ -131,6 +131,7 @@ export default function Home() {
           return (
             <Sitter
               key={el.userId}
+              uid = {el.userId}
               Name={el.firstname + " " + el.lastname}
               Ava={el.Profile.availabilitySlot}
               PetType={el.Profile.petType}
