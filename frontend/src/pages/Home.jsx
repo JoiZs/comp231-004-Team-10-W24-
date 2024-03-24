@@ -16,6 +16,7 @@ import Sitter from "../component/Sitter";
 import { useContext, useEffect, useState } from "react";
 import axios from "axios";
 import { AuthCtx } from "../context";
+import { Text } from "@chakra-ui/react";
 
 export default function Home() {
   const [nearby, setNearby] = useBoolean(false);
@@ -51,7 +52,23 @@ export default function Home() {
   }, [ratingState, nearby, pageNum]);
 
   return (
-    <Container mt={5} maxW="container.md" color="black" rounded={10}>
+    <Container mt={5} maxW="full" p={0} color="black" h="100vh" centerContent overflow="hidden">
+      <VStack
+        minH="80vh" w="full" justify="center" px={4} bgGradient="linear(to-r, blackAlpha.600, transparent)"
+        backgroundImage="url('https://www.bls.gov/opub/btn/volume-2/images/2-16-image.jpg')"
+        backgroundSize="cover"
+        backgroundPosition="center 90%"
+      >
+        <Text color="white" fontWeight="700" lineHeight="1.2" fontSize="4xl">
+          Find Your Perfect Pet Sitters Today
+        </Text>
+        <ButtonGroup variant="solid" spacing={4}>
+          <Button bg="blue.400" color="white" _hover={{ bg: 'blue.500' }}>
+            Show me more
+          </Button>
+        </ButtonGroup>
+      </VStack>
+
       <Flex alignItems={"center"} padding={2} flexWrap={"wrap"}>
         <div className="flex items-center justify-center">
           <RiStarFill fontSize={18} color="blue" />
@@ -131,7 +148,7 @@ export default function Home() {
           return (
             <Sitter
               key={el.userId}
-              uid = {el.userId}
+              uid={el.userId}
               Name={el.firstname + " " + el.lastname}
               Ava={el.Profile.availabilitySlot}
               PetType={el.Profile.petType}

@@ -2,7 +2,7 @@ import { BrowserRouter, Routes, Route } from "react-router-dom";
 import { ChakraProvider } from "@chakra-ui/react";
 
 import Registration from "./pages/registration";
-import Profile_sitter from "./pages/profile_sitter";
+import Profile_sitter from "./pages/profile_sitter";``
 import AccountProfile from "./pages/accountprofile";
 import Header from "./component/Header";
 import Home from "./pages/Home";
