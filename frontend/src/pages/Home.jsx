@@ -16,7 +16,29 @@ import Sitter from "../component/Sitter";
 import { useContext, useEffect, useState } from "react";
 import axios from "axios";
 import { AuthCtx } from "../context";
-import { Text } from "@chakra-ui/react";
+import { Box, Card, CardBody, Grid, Image, Text } from "@chakra-ui/react";
+
+
+function SitterCard({ sitter }) {
+  return (
+    <Card overflow="hidden" variant="outline" bg="transparent">
+      <CardBody>
+        <Flex direction={{ base: "column", sm: "row" }} align="center">
+          <Image
+            src={sitter.Img}
+            alt={`${sitter.Name}`}
+            boxSize={{ base: "100%", sm: "150px" }}
+            objectFit="cover"
+          />
+          <VStack align="start" pl={{ sm: 4 }}>
+            <Text>{`Name: ${sitter.Name} - Availability: ${sitter.Ava}`}</Text>
+            <Text>{`Pet type: ${sitter.PetType} - Distance: ${sitter.Distance}`}</Text>
+          </VStack>
+        </Flex>
+      </CardBody>
+    </Card>
+  );
+}
 
 export default function Home() {
   const [nearby, setNearby] = useBoolean(false);
@@ -52,23 +74,7 @@ export default function Home() {
   }, [ratingState, nearby, pageNum]);
 
   return (
-    <Container mt={5} maxW="full" p={0} color="black" h="100vh" centerContent overflow="hidden">
-      <VStack
-        minH="80vh" w="full" justify="center" px={4} bgGradient="linear(to-r, blackAlpha.600, transparent)"
-        backgroundImage="url('https://www.bls.gov/opub/btn/volume-2/images/2-16-image.jpg')"
-        backgroundSize="cover"
-        backgroundPosition="center 90%"
-      >
-        <Text color="white" fontWeight="700" lineHeight="1.2" fontSize="4xl">
-          Find Your Perfect Pet Sitters Today
-        </Text>
-        <ButtonGroup variant="solid" spacing={4}>
-          <Button bg="blue.400" color="white" _hover={{ bg: 'blue.500' }}>
-            Show me more
-          </Button>
-        </ButtonGroup>
-      </VStack>
-
+    <Container mt={5} maxW="full" p={0} color="black" h="100vh" centerContent overflow="hidden" position="relative">
       <Flex alignItems={"center"} padding={2} flexWrap={"wrap"}>
         <div className="flex items-center justify-center">
           <RiStarFill fontSize={18} color="blue" />
@@ -162,6 +168,81 @@ export default function Home() {
           <span className="text-gray-400">No sitter found.</span>
         )}
       </VStack>
+
+      {/*background */}
+      <Box
+        h="150vh" w="full"
+        bgImage="url('https://www.bls.gov/opub/btn/volume-2/images/2-16-image.jpg')"
+        bgPos="center 77%"
+        bgSize="cover"
+      >
+        <Text color="white" fontWeight="700" lineHeight="1.2" fontSize="4xl" textAlign="center" pt={20}>
+          Find Your Perfect Pet Sitters Today
+        </Text>
+      </Box>
+
+      {/*preview sitter cards */}
+      <VStack spacing={4} w="full" p={4}>
+        <Grid templateColumns={{ sm: "repeat(1, 1fr)", md: "repeat(2, 1fr)", lg: "repeat(5, 1fr)" }} gap={6}  >
+          <SitterCard
+            sitter={{
+              Name: "Sitter One",
+              Img: "https://media.istockphoto.com/id/1464498740/photo/laughing-couple-playing-with-their-dog-on-their-living-room-sofa.webp?b=1&s=612x612&w=0&k=20&c=1k-ajU17T_bjcvi8m_0UkdJ5sIOgJB5robasBVzP_oU=",
+              Ava: "Available",
+              PetType: "Cats",
+              Rating: "5 stars",
+              Distance: "2 miles"
+            }}
+          />
+          <SitterCard
+            sitter={{
+              Name: "Sitter Two",
+              Img: "https://media.istockphoto.com/id/1464498740/photo/laughing-couple-playing-with-their-dog-on-their-living-room-sofa.webp?b=1&s=612x612&w=0&k=20&c=1k-ajU17T_bjcvi8m_0UkdJ5sIOgJB5robasBVzP_oU=",
+              Ava: "Weekends",
+              PetType: "Dogs",
+              Rating: "4.5 stars",
+              Distance: "5 miles"
+            }}
+          />
+          <SitterCard
+            sitter={{
+              Name: "Sitter Three",
+              Img: "https://media.istockphoto.com/id/1464498740/photo/laughing-couple-playing-with-their-dog-on-their-living-room-sofa.webp?b=1&s=612x612&w=0&k=20&c=1k-ajU17T_bjcvi8m_0UkdJ5sIOgJB5robasBVzP_oU=",
+              Ava: "Weekdays",
+              PetType: "Dogs and Cats",
+              Rating: "4 stars",
+              Distance: "3 miles"
+            }}
+          />
+          <SitterCard
+            sitter={{
+              Name: "Sitter Four",
+              Img: "https://media.istockphoto.com/id/1464498740/photo/laughing-couple-playing-with-their-dog-on-their-living-room-sofa.webp?b=1&s=612x612&w=0&k=20&c=1k-ajU17T_bjcvi8m_0UkdJ5sIOgJB5robasBVzP_oU=",
+              Ava: "Evenings",
+              PetType: "Small Pets",
+              Rating: "5 stars",
+              Distance: "1 mile"
+            }}
+          />
+          <SitterCard
+            sitter={{
+              Name: "Sitter Five",
+              Img: "https://media.istockphoto.com/id/1464498740/photo/laughing-couple-playing-with-their-dog-on-their-living-room-sofa.webp?b=1&s=612x612&w=0&k=20&c=1k-ajU17T_bjcvi8m_0UkdJ5sIOgJB5robasBVzP_oU=",
+              Ava: "On Call",
+              PetType: "Exotic Pets",
+              Rating: "4.8 stars",
+              Distance: "10 miles"
+            }}
+          />
+        </Grid>
+      </VStack>
+
+      <ButtonGroup variant="solid" spacing={4}>
+        <Button bg="blue.400" color="white" _hover={{ bg: 'blue.500' }}>
+          Show more
+        </Button>
+      </ButtonGroup>
     </Container>
+
   ); //end of return()
-} // end of Home(){}
+} // end of Home(){ }
