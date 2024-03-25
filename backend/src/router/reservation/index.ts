@@ -1,6 +1,5 @@
 import { Router } from "express";
 import prisma from "../../utils/prismaClient";
-import { isDate } from "validator";
 import { isAuthenticated } from "../../utils/loginverify";
 
 const reservRouter = Router();
@@ -30,40 +29,20 @@ reservRouter.post("/reserv", isAuthenticated, async (req, res) => {
 
 reservRouter.patch("/req_updatereserv", isAuthenticated, async (req, res) => {
   const userid = req.user.userid;
-  const { resvId, dayRate, petCount, petType, checkIn, checkOut } = req.body;
-
-  if (checkIn || checkOut)
-    if (!isDate(checkIn) || !isDate(checkOut)) {
-      return res.json({ type: "error", message: "Invalid date Format." });
-    } else if (
-      new Date(checkIn).getTime() <= Date.now() ||
-      new Date(checkOut).getTime() <= Date.now() ||
-      new Date(checkOut).getTime() <= new Date(checkIn).getTime()
-    ) {
-      return res.json({
-        type: "error",
-        message: "Invalid checkin, checkout dates.",
-      });
-    }
+  const { resvId, dayRate, petCount, checkIn, checkOut } = req.body;
 
   try {
-    await prisma.reservation.upsert({
-      where: { reserveId: resvId, ownerId: userid, status: { not: "reject" } },
-      update: {
-        ...(dayRate && { ratePerDay: dayRate }),
-        ...(petCount && { petCount: petCount }),
-        ...(petType && { petType: petType }),
-        ...(checkIn && { checkIn: new Date(checkIn) }),
-        ...(checkOut && { checkOut: new Date(checkOut) }),
-        status: "pending",
+    await prisma.reservation.update({
+      where: {
+        reserveId: resvId,
+        ownerId: userid,
       },
-      create: {
+      data: {
         ...(dayRate && { ratePerDay: dayRate }),
         ...(petCount && { petCount: petCount }),
-        ...(petType && { petType: petType }),
         ...(checkIn && { checkIn: new Date(checkIn) }),
         ...(checkOut && { checkOut: new Date(checkOut) }),
-        status: "pending",
+        status: "Pending",
       },
     });
   } catch (error) {
@@ -73,11 +52,15 @@ reservRouter.patch("/req_updatereserv", isAuthenticated, async (req, res) => {
       message: "Internal Server Error",
     });
   }
+  return res.json({
+    type: "success",
+    message: "Successfully changed the reservation info.",
+  });
 });
 
 reservRouter.patch("/acpt_updatereserv", isAuthenticated, async (req, res) => {
   const userid = req.user.userid;
-  const { resvId, status = "pending" } = req.body;
+  const { resvId, status = "Pending" } = req.body;
 
   try {
     await prisma.reservation.update({
@@ -109,13 +92,7 @@ reservRouter.post("/create", isAuthenticated, async (req, res) => {
     messageTxt,
   } = req.body;
 
-  if (
-    !petType ||
-    !isDate(checkIn) ||
-    !isDate(checkOut) ||
-    !ratePerDay ||
-    !sitterId
-  )
+  if (!petType || !checkIn || !checkOut || !ratePerDay || !sitterId)
     return res.json({
       type: "error",
       message: "Incomplete input to create a reservation.",
@@ -130,7 +107,7 @@ reservRouter.post("/create", isAuthenticated, async (req, res) => {
         checkOut: new Date(checkOut),
         ratePerDay,
         sitterId,
-        status: "pending",
+        status: "Pending",
         ownerId: userid,
         ChatRoom: {
           create: {

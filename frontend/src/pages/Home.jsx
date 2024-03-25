@@ -8,6 +8,7 @@ import {
   RiNumber4,
   RiNumber5,
   RiStarFill,
+  RiNumber0,
 } from "react-icons/ri";
 import { Button, ButtonGroup, useBoolean } from "@chakra-ui/react";
 import { Flex, VStack } from "@chakra-ui/react";
@@ -57,6 +58,15 @@ export default function Home() {
           <RiStarFill fontSize={18} color="blue" />
         </div>
         <ButtonGroup flex={1}>
+          <IconButton
+            onClick={() => setRatingState(0)}
+            variant={ratingState == 0 ? "solid" : "outline"}
+            size={"xs"}
+            colorScheme="blue"
+            aria-label="rating-0"
+            icon={<Icon as={RiNumber0} />}
+            m={1}
+          />
           <IconButton
             onClick={() => setRatingState(1)}
             variant={ratingState == 1 ? "solid" : "outline"}
@@ -131,11 +141,11 @@ export default function Home() {
           return (
             <Sitter
               key={el.userId}
-              uid = {el.userId}
+              uid={el.userId}
               Name={el.firstname + " " + el.lastname}
               Ava={el.Profile.availabilitySlot}
               PetType={el.Profile.petType}
-              Rating={el.avg.rating}
+              Rating={el.rating}
               Distance={el.distance}
               Img={el.Profile.img}
             />

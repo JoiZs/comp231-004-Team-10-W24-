@@ -29,7 +29,19 @@ const Login = () => {
           duration: 2000,
           onCloseComplete: async () => {
             if (res.data.type == "success") {
-              setIsAuth(true);
+              await axios
+                .get("http://localhost:4000/profile/me", {
+                  withCredentials: true,
+                })
+                .then((res) => {
+                  if (res.data?.type == "success") setIsAuth(res.data.data);
+                  else {
+                    setIsAuth(null);
+                  }
+                })
+                .catch((err) => {
+                  setIsAuth(null);
+                });
               navigate("/");
             }
           },

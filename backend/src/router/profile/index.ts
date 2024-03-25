@@ -41,26 +41,45 @@ profileRouter.post("/sitters", async (req, res) => {
   const { pageNum = 1, sortByRating = 4, sortByLocation = false } = req.body;
 
   if (!sortByLocation) {
-    await prisma.review
-      .groupBy({
-        by: ["receiverId"],
+    await prisma.client
+      .findMany({
         skip: (pageNum - 1) * 5,
-        _avg: { rating: true },
         take: 5,
-        having: {
-          rating: {
-            _avg: {
-              gte: sortByRating,
+        orderBy: { userId: "desc" },
+        select: {
+          userId: true,
+          firstname: true,
+          lastname: true,
+          address: { select: { latitude: true, longitude: true } },
+          Profile: {
+            select: {
+              img: true,
+              availabilitySlot: true,
+              petType: true,
+            },
+          },
+          _count: {
+            select: {
+              reviewReceived: {
+                // where: { rating: { gte: sortByRating } },
+                where: {
+                  AND: [{ rating: { gte: sortByRating - 1 } }],
+                },
+              },
             },
           },
         },
-        orderBy: { receiverId: "desc" },
+        where: {
+          userId: { not: userid },
+          Profile: { profileType: "Sitter" },
+          reviewReceived: { every: { rating: { gte: sortByRating - 1 } } },
+        },
       })
       .then(async (result) => {
-        const restCount = await prisma.review.count({
+        console.log(result);
+        const restCount = await prisma.client.count({
           skip: pageNum * 5,
-          where: { rating: { gte: sortByRating } },
-          orderBy: { rating: "desc" },
+          orderBy: { userId: "desc" },
         });
 
         const currentUserLoc = userid
@@ -70,46 +89,39 @@ profileRouter.post("/sitters", async (req, res) => {
             })
           : undefined;
 
-        const sitterPromises = result.map(async (el) => {
-          const sitterData = await prisma.client.findFirst({
-            select: {
-              userId: true,
-              firstname: true,
-              lastname: true,
-              address: { select: { latitude: true, longitude: true } },
-              Profile: {
-                select: {
-                  img: true,
-                  availabilitySlot: true,
-                  petType: true,
-                },
-              },
-            },
-            where: { userId: el.receiverId },
-          });
+        const sitterPromises = result
+          .filter((ft) =>
+            sortByRating > 0 ? ft._count.reviewReceived > 0 : ft
+          )
+          .map(async (el) => {
+            const sitterData = await prisma.review.aggregate({
+              _avg: { rating: true },
+              orderBy: { receiverId: "desc" },
+              where: { receiverId: el.userId },
+            });
 
-          if (
-            !currentUserLoc?.latitude ||
-            !currentUserLoc.longitude ||
-            !sitterData?.address?.latitude ||
-            !sitterData.address.longitude
-          ) {
-            return { ...sitterData, avg: el._avg };
-          } else {
-            const distance =
-              getDistance(
-                {
-                  latitude: currentUserLoc.latitude,
-                  longitude: currentUserLoc.longitude,
-                },
-                {
-                  latitude: sitterData?.address?.latitude,
-                  longitude: sitterData?.address?.longitude,
-                }
-              ) / 1000;
-            return { ...sitterData, distance, avg: el._avg };
-          }
-        });
+            if (
+              !currentUserLoc?.latitude ||
+              !currentUserLoc.longitude ||
+              !el.address?.latitude ||
+              !el.address.longitude
+            ) {
+              return { rating: sitterData._avg.rating, ...el };
+            } else {
+              const distance =
+                getDistance(
+                  {
+                    latitude: currentUserLoc.latitude,
+                    longitude: currentUserLoc.longitude,
+                  },
+                  {
+                    latitude: el?.address?.latitude,
+                    longitude: el?.address?.longitude,
+                  }
+                ) / 1000;
+              return { rating: sitterData._avg.rating, distance, ...el };
+            }
+          });
 
         const finalResults = await Promise.all(sitterPromises);
 

@@ -14,13 +14,23 @@ import {
   Tooltip,
   useToast,
   Button,
+  useDisclosure,
+  Modal,
+  ModalOverlay,
+  ModalContent,
+  ModalHeader,
+  ModalCloseButton,
+  ModalBody,
+  ModalFooter,
 } from "@chakra-ui/react";
 import { useParams } from "react-router-dom";
 import axios from "axios";
 import { AuthCtx } from "../context";
+import Book from "./Book";
 
 const Profile_Sitter = () => {
   const [sitterInfo, setSitterInfo] = useState(null);
+  const { isOpen, onOpen, onClose } = useDisclosure();
   const { uid } = useParams();
   const { isAuth } = useContext(AuthCtx);
   const toast = useToast();
@@ -41,13 +51,16 @@ const Profile_Sitter = () => {
   }, [uid]);
 
   const BookHandler = async () => {
-    if (!isAuth)
+    if (!isAuth) {
       toast({
         title: "Reservation",
         duration: 3000,
         status: "error",
         description: "You must login to make a reservation.",
       });
+    } else {
+      onOpen();
+    }
   };
 
   return (
@@ -64,18 +77,38 @@ const Profile_Sitter = () => {
           name={sitterInfo?.firstname + " " + sitterInfo?.lastname}
         />
       </Box>
+      <Modal
+        onClose={onClose}
+        // finalFocusRef={btnRef}
+        isOpen={isOpen}
+        scrollBehavior={"inside"}
+      >
+        <ModalOverlay />
+        <ModalContent>
+          <ModalHeader>Make a reservation</ModalHeader>
+          <ModalCloseButton />
+          <ModalBody>
+            <Book sitterId={sitterInfo?.userId} />
+          </ModalBody>
+          <ModalFooter>
+            <Button onClick={onClose}>Close</Button>
+          </ModalFooter>
+        </ModalContent>
+      </Modal>
       <HStack py={4} justifyContent={"space-between"} alignItems={"center"}>
         <Heading as="h2" size="lg">
           {sitterInfo?.firstname + " " + sitterInfo?.lastname}
         </Heading>
-        <Button
-          colorScheme="blue"
-          size={"sm"}
-          variant={"outline"}
-          onClick={BookHandler}
-        >
-          Book
-        </Button>
+        {isAuth?.Profile?.profileType === "Owner" && (
+          <Button
+            colorScheme="blue"
+            size={"sm"}
+            variant={"outline"}
+            onClick={BookHandler}
+          >
+            Book
+          </Button>
+        )}
       </HStack>
       <VStack alignItems={"flex-start"} py={2}>
         <Badge>Address</Badge>
@@ -119,10 +152,10 @@ const Profile_Sitter = () => {
         <VStack maxH={"300px"}>
           {sitterInfo?.reviewReceived?.map((el, idx) => {
             return (
-              <HStack justifyContent={"flex-start"} p={2} key={idx}>
-                <Avatar name={el.givenBy?.firstname} />
+              <HStack justifyContent={"flex-start"} p={2} key={idx} w={"full"}>
+                <Avatar size={"xs"} name={el.givenBy?.firstname} />
                 <VStack alignItems={"flex-start"}>
-                  <Heading size={"sm"}>
+                  <Heading size={"xs"}>
                     {Number(el.rating).toFixed(1)} by{" "}
                     {el.givenBy?.firstname + " " + el.givenBy?.lastname}
                   </Heading>
@@ -132,6 +165,8 @@ const Profile_Sitter = () => {
                       textOverflow={"ellipsis"}
                       whiteSpace={"nowrap"}
                       maxW={"sm"}
+                      size={"xs"}
+                      color={"GrayText"}
                     >
                       {el.comment}
                     </Text>

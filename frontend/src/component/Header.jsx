@@ -30,6 +30,9 @@ export default function Header() {
           <span className="text-yellow-600">BnB</span>
         </h1>
         <div className="flex gap-4">
+          <Link to={"/"}>
+            <span>Home</span>
+          </Link>
           {isAuth ? (
             <>
               <Link to="/reservations">Reservations</Link>

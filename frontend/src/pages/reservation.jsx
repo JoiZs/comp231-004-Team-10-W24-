@@ -1,6 +1,7 @@
 import { useLayoutEffect, useState } from "react";
 import axios from "axios";
 import { Button, Badge } from "@chakra-ui/react";
+import PopoverResvStatus from "../component/popoverResvStatus";
 
 const Reservation = () => {
   const [reserv, setReserv] = useState([]);
@@ -136,7 +137,8 @@ const Reservation = () => {
                     {new Date(el.checkOut).toDateString()}
                   </span>
                 </div>
-                <div className="flex justify-end">
+                <div className="flex justify-end gap-2">
+                  <PopoverResvStatus resv={el} />
                   <Button variant={"solid"}>Chat</Button>
                 </div>
               </div>
