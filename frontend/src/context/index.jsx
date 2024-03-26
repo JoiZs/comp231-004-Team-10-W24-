@@ -1,9 +1,12 @@
 import { useLayoutEffect, useState } from "react";
-import { createContext } from "react";
+import { createContext, useContext } from "react";
 import axios from "axios";
 
 export const RegisterCtx = createContext();
 export const AuthCtx = createContext();
+
+export const useAuth = () => useContext(AuthCtx);
+
 export const AuthCtxProvider = ({ children }) => {
   const [isAuth, setIsAuth] = useState(null);
 

@@ -36,7 +36,7 @@ export default function Header() {
           {isAuth ? (
             <>
               <Link to="/reservations">Reservations</Link>
-              <Link to="/me">Profile</Link>
+              <Link to="/me">My Profile</Link>
             </>
           ) : (
             <Link to="/login">Login</Link>

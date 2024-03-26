@@ -11,6 +11,7 @@ import {
 import { SearchIcon } from "@chakra-ui/icons";
 import axios from "axios";
 import { locationIQtk } from "../consts";
+import { Text } from '@chakra-ui/react'
 
 function Registration1({ setPgNum }) {
   const { _registerPl, setRegisterPl } = useContext(RegisterCtx);
@@ -58,7 +59,7 @@ function Registration1({ setPgNum }) {
             icon={<SearchIcon />}
           />
         </InputRightElement>
-      </InputGroup>
+      </InputGroup>      
       {loc.map((el) => (
         <Tooltip label={el.display_name} key={el.place_id}>
           <Input
@@ -81,9 +82,11 @@ function Registration1({ setPgNum }) {
             whiteSpace={"nowrap"}
             overflow={"hidden"}
           />
-        </Tooltip>
+        </Tooltip>        
       ))}
+      <Text fontSize='sm'>For best result, use this format: house number, street, neighbourhood, city, state, country, postcode</Text>
     </VStack>
+    
   );
 }
 
