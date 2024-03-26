@@ -7,15 +7,7 @@ import {
   Heading,
   Badge,
   Avatar,
-  HStack,
   VStack,
-  Card,
-  CardHeader,
-  CardBody,
-  SimpleGrid,
-  Tooltip,
-  useToast,
-  Button,
   useDisclosure,
   Modal,
   ModalOverlay,
@@ -24,11 +16,21 @@ import {
   ModalCloseButton,
   ModalBody,
   ModalFooter,
+  Button,
+  FormControl, FormLabel, Input
 } from "@chakra-ui/react";
 
 const ProfilePage = () => {
+  // for modal
+  const { isOpen, onOpen, onClose } = useDisclosure();
   const [profileData, setProfileData] = useState(null);
   const [isLoading, setIsLoading] = useState(true);
+  const [formData, setFormData] = useState({
+    address: "",
+    fname: "",
+    lname: "",
+    pType: "",
+  });
 
   useEffect(() => {
     // Fetch profile data when the component mounts
@@ -47,6 +49,31 @@ const ProfilePage = () => {
 
     fetchProfileData();
   }, []);
+
+  const handleInputChange = (e) => {
+    const { name, value } = e.target;
+    setFormData({
+      ...formData,
+      [name]: value,
+    });
+  };
+
+  const handleSaveChanges = async () => {
+    try {
+      await axios.patch(
+        "http://localhost:4000/profile/update",
+        formData,
+        {
+          withCredentials: true,
+        }
+      );
+      // Optionally, update local state or trigger any necessary actions upon successful update
+      onClose();
+    } catch (error) {
+      console.error("Error updating profile data:", error);
+      // Handle error as needed (e.g., display an error message)
+    }
+  };
 
   if (isLoading) {
     return <div>Loading...</div>;
@@ -81,6 +108,56 @@ const ProfilePage = () => {
         ${profileData?.address?.province}`}
       </Text>
       </VStack>
+      <Button mt={4} colorScheme="blue" onClick={onOpen}>
+        Edit Profile
+      </Button>
+
+      {/* Overlay Edit Profile */}
+
+      <Modal isOpen={isOpen} onClose={onClose}>
+        <ModalOverlay />
+        <ModalContent>
+          <ModalHeader>Edit Profile</ModalHeader>
+          <ModalCloseButton />
+          <ModalBody>
+            {/* Include your form for editing profile details here */}            
+            <FormControl>
+            <FormLabel>First Name:</FormLabel>
+            <Input           
+              type="text"
+              name="firstname"
+              placeholder="First Name"
+              value={formData.firstname}
+              onChange={handleInputChange}
+            />
+            <FormLabel>Last Name:</FormLabel>
+            <Input
+              type="text"              
+              name="lastname"
+              placeholder="Last Name"
+              value={formData.lastname}
+              onChange={handleInputChange}
+            />
+            <FormLabel>Address</FormLabel>
+            <Input
+              type="text"         
+              name="address"
+              placeholder="Address"
+              value={formData.address}
+              onChange={handleInputChange}
+            />
+            </FormControl>
+          </ModalBody>
+          <ModalFooter>
+            <Button colorScheme="blue" mr={3} onClick={onClose}>
+              Close
+            </Button>
+            <Button colorScheme="green" onClick={handleSaveChanges}>
+              Save Changes
+            </Button>
+          </ModalFooter>
+        </ModalContent>
+      </Modal>
     </div>
   );
 };
