@@ -228,12 +228,22 @@ profileRouter.patch("/update", isAuthenticated, async (req, res) => {
     await prisma.client.update({
       where: { userId: userid },
       data: {
-        address: {
-          update: { ...(address && { address: address }) },
-        },
         ...(fname && { firstname: fname }),
         ...(lname && { lastname: lname }),
         Profile: { update: { ...(pType && { petType: pType }) } },
+        address: {
+          update: {
+            ...(address && {
+              city: address.city,
+              street: address.street,
+              postalCode: address.postalCode,
+              province: address.province,
+              suburb: address.suburb,
+              latitude: address.lat,
+              longitude: address.long,
+            }),
+          },
+        },
       },
     });
   } catch (error) {
