@@ -229,7 +229,17 @@ profileRouter.patch("/update", isAuthenticated, async (req, res) => {
       where: { userId: userid },
       data: {
         address: {
-          update: { ...(address && { address: address }) },
+          update: {
+            ...(address && {
+              city: address.city,
+              street: address.street,
+              postalCode: address.postalCode,
+              province: address.province,
+              suburb: address.suburb,
+              latitude: address.lat,
+              longitude: address.long,
+            }),
+          },
         },
         ...(fname && { firstname: fname }),
         ...(lname && { lastname: lname }),
