@@ -22,7 +22,7 @@ import { locationIQtk } from "../consts";
 import axios from "axios";
 
 const EditProfile = () => {
-    const { isOpen, onOpen, onClose } = useDisclosure();  // useDisclosure hook for overlay
+    const { isOpen, onOpen, onClose } = useDisclosure();  // useDisclosure hook for overlay (chakraUI)
     const SearchRef = useRef(null);
     const [loc, setLoc] = useState([]);
     const [formData, setFormData] = useState({
@@ -58,7 +58,7 @@ const EditProfile = () => {
         setFormData(prevData => ({
           ...prevData,
           address: {
-            street: address.road,
+            street: address.road || address.name, //follow field names provided by API
             city: address.city,
             province: address.state,
             postalCode: address.postcode,
