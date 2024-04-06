@@ -15,13 +15,15 @@ import {
     InputGroup,
     Tooltip,
     IconButton,
-    InputRightElement
+    InputRightElement,
+    Checkbox,
+    VStack
   } from "@chakra-ui/react";
 import {SearchIcon} from "@chakra-ui/icons";
 import { locationIQtk } from "../consts";
 import axios from "axios";
 
-const EditProfile = () => {
+const EditProfile = (props) => {
     const { isOpen, onOpen, onClose } = useDisclosure();  // useDisclosure hook for overlay (chakraUI)
     const SearchRef = useRef(null);
     const [loc, setLoc] = useState([]);
@@ -29,16 +31,23 @@ const EditProfile = () => {
         address: {},
         fname: "",
         lname: "",
-        pType: ""
+        pType: []
       });
 
     const handleChange = (e) => {
         const { name, value } = e.target;
+        if (name === "pType") {
+          setFormData((prevData) => ({
+          ...prevData,
+          [name]: [value]
+        }));
+      } else {
         setFormData((prevData) => ({
           ...prevData,
           [name]: value
         }));
-      };
+      }
+    };
 
     const addressHandler = async () => {
     const searchKw = SearchRef.current.value;
@@ -51,6 +60,7 @@ const EditProfile = () => {
         })
         .catch((err) => {
         alert("Location Error.");
+        console.error("Location Error:", err.response ? err.response.data : err.message);
         });
     };
 
@@ -70,14 +80,34 @@ const EditProfile = () => {
   
        setLoc([]);
        };
-
+       const handleCheckboxChange = (e, pet) => {
+        if (e.target.checked) {
+          setFormData((prevData) => {
+            const updatedPType = [...prevData.pType, pet];
+            console.log('Updated pType after adding:', updatedPType);
+            return {
+              ...prevData,
+              pType: updatedPType,
+            };
+          });
+        } else {
+          setFormData((prevData) => {
+            const updatedPType = prevData.pType.filter((type) => type !== pet);
+            console.log('Updated pType after removing:', updatedPType);
+            return {
+              ...prevData,
+              pType: updatedPType,
+            };
+          });
+        }
+      };
        const submitHandler = async(e) => {
         e.preventDefault();
        
       const requestBody = {
         ...formData
     };
-    
+    console.log('Data being sent to backend:', requestBody);
         try {
           const response = await axios.patch(
             "http://localhost:4000/profile/update",
@@ -86,7 +116,10 @@ const EditProfile = () => {
           );
         console.log(response.data);
         onClose();
-      } catch (error) {
+        if(props.onUpdate){
+          props.onUpdate(); 
+      } 
+    } catch (error) {
         console.error("Error updating profile:", error);
       }
     };
@@ -126,7 +159,10 @@ const EditProfile = () => {
                   />
                 </InputRightElement>
                 </InputGroup>
-                {loc.map((el) => (
+                {loc.map((el) => {
+                  // Log to check the uniqueness of each `place_id`
+  console.log(el.place_id);
+                return (
                   <Tooltip label={el.display_name} key={el.place_id}>
                     <Input
                       onClick={() =>
@@ -149,13 +185,21 @@ const EditProfile = () => {
                       overflow={"hidden"}
                       />
                   </Tooltip>
+                );
+                    })}
+                <FormLabel>Pet Type</FormLabel>
+                <VStack alignItems="flex-start">
+                {["dog", "cat", "bird", "fish", "reptile"].map((pet) => (
+                  <Checkbox
+                    key={pet}
+                    value={pet}
+                    isChecked={formData.pType.includes(pet)}
+                    onChange={(e) => handleCheckboxChange(e, pet)}
+                  >
+                    {pet.charAt(0).toUpperCase() + pet.slice(1)}
+                  </Checkbox>
                 ))}
-                {/* <FormLabel>Pet Type</FormLabel>
-                <Select defaultValue={"Dog"}>
-                  <option value="Dog">Dog</option>
-                  <option value="Cat">Cat</option>
-                  <option value="Rabbit">Rabbit</option>
-                </Select> */}
+              </VStack>
               </FormControl>
             </ModalBody>
             <ModalFooter>

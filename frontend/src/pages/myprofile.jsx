@@ -13,7 +13,7 @@ export default function Profile() {
   const [profileData, setProfileData] = useState(null);
   const [isLoading, setIsLoading] = useState(true);
   
-  useEffect(() => {
+ 
     const fetchProfileData = async () => {
       try {
         const response = await axios.get("http://localhost:4000/profile/me", {
@@ -21,12 +21,13 @@ export default function Profile() {
         });
         setProfileData(response.data.data);
         setIsLoading(false);
+        console.log("Pet types:", response.data.data.Profile.petType); // Logs the pet types
       } catch (error) {
         console.error("Error fetching profile data:", error);
         setIsLoading(false);
       }
     };
-
+useEffect(()=>{
     fetchProfileData();
   }, []);
 
@@ -49,7 +50,7 @@ export default function Profile() {
         name={profileData?.firstname + " " + profileData?.lastname}
       />
       <VStack alignItems={"flex-start"} py={2}>
-        <Badge>Fristname</Badge>
+        <Badge>Firstname</Badge>
         <Text>{profileData.firstname}</Text>
         <Badge>Lastname</Badge>
         <Text>{profileData.lastname}</Text>
@@ -62,8 +63,12 @@ export default function Profile() {
                 ${profileData?.address?.postalCode},
                 ${profileData?.address?.province}`}
         </Text>
+        <Badge>Pet Type</Badge>
+        <Text>{profileData.Profile.petType && profileData.Profile.petType.length > 0 ? profileData.Profile.petType.join(', ') : 'Not specified'}</Text>
+        
       </VStack>
-      <EditProfile />
+        <EditProfile onUpdate={fetchProfileData} />
+  
     </div>
   );
 }
