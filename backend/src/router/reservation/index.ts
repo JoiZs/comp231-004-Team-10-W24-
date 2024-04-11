@@ -87,10 +87,16 @@ reservRouter.patch("/acpt_updatereserv", isAuthenticated, async (req, res) => {
   const { resvId, status = "Pending" } = req.body;
 
   try {
-    await prisma.reservation.update({
-      where: { reserveId: resvId, sitterId: userid },
-      data: { status: status },
-    });
+    if (status === "Completed") {
+      await prisma.reservation.update({
+        where: { reserveId: resvId, ownerId: userid },
+        data: { status: status },
+      });
+    } else
+      await prisma.reservation.update({
+        where: { reserveId: resvId, sitterId: userid },
+        data: { status: status },
+      });
   } catch (error) {
     if (error) {
       console.log(error);

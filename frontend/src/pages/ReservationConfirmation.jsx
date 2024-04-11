@@ -1,5 +1,18 @@
-import { Badge, Button, Divider, useToast } from "@chakra-ui/react";
-import React, { useContext, useEffect, useState } from "react";
+import {
+  Badge,
+  Button,
+  Divider,
+  useDisclosure,
+  useToast,
+  Modal,
+  ModalOverlay,
+  ModalContent,
+  ModalBody,
+  ModalHeader,
+  ModalFooter,
+  ModalCloseButton,
+} from "@chakra-ui/react";
+import React, { useContext, useEffect, useRef, useState } from "react";
 import { useParams } from "react-router-dom";
 import axios from "axios";
 import { AuthCtx } from "../context";
@@ -8,7 +21,14 @@ const ReservationConfirmation = () => {
   const { rid } = useParams();
   const [reserv, setReserv] = useState();
   const { isAuth } = useContext(AuthCtx);
+  const {
+    isOpen: isOpenReview,
+    onOpen: onOpenReview,
+    onClose: onCloseReview,
+  } = useDisclosure();
   const toast = useToast();
+  const ratingRef = useRef();
+  const cmtRef = useRef();
 
   useEffect(() => {
     const getConfirm = async () => {
@@ -42,9 +62,45 @@ const ReservationConfirmation = () => {
           toast({
             title: "Reservation Status",
             isClosable: true,
-            duration: 2000,
+            duration: 500,
             status: res.data.type,
             description: res.data.message,
+            onCloseComplete: () => {
+              if (res.data.type === "success") {
+                onOpenReview();
+              }
+            },
+          });
+        }
+      });
+  };
+
+  const reviewHandler = async () => {
+    await axios
+      .post(
+        "http://localhost:4000/review/postreview",
+        {
+          rating: parseFloat(ratingRef.current.value),
+          comment: cmtRef.current.value,
+          sitterId: reserv?.sitterId,
+        },
+        {
+          withCredentials: true,
+        }
+      )
+      .then((res) => {
+        if (res.data) {
+          toast({
+            title: "Review Status",
+            isClosable: true,
+            duration: 1000,
+            status: res.data.type,
+            description: res.data.message,
+            onCloseComplete: () => {
+              if (res.data.type === "success") {
+                onCloseReview();
+              }
+            },
           });
         }
       });
@@ -52,6 +108,42 @@ const ReservationConfirmation = () => {
 
   return (
     <div>
+      <Modal
+        closeOnOverlayClick={false}
+        isOpen={isOpenReview}
+        onClose={onCloseReview}
+      >
+        <ModalOverlay />
+        <ModalContent>
+          <ModalHeader>Create a review.</ModalHeader>
+          <ModalCloseButton />
+          <ModalBody>
+            <div>
+              <div className="p-2 flex justify-between">
+                <span>Rating:</span>
+                <select ref={ratingRef} defaultValue={5}>
+                  <option value={1}>1</option>
+                  <option value={2}>2</option>
+                  <option value={3}>3</option>
+                  <option value={4}>4</option>
+                  <option value={5}>5</option>
+                </select>
+              </div>
+
+              <textarea
+                ref={cmtRef}
+                placeholder="Comment..."
+                rows={6}
+                className="w-full p-2 border"
+              ></textarea>
+            </div>
+          </ModalBody>
+          <ModalFooter gap={2}>
+            <Button onClick={reviewHandler}>Submit</Button>
+            <Button onClick={onCloseReview}>Cancel</Button>
+          </ModalFooter>
+        </ModalContent>
+      </Modal>
       <div className="flex max-w-lg w-full flex-col h-full">
         <div className="flex flex-col p-2 h-full gap-2 justify-center">
           <h1 className="font-semibold text-2xl">Confirmation</h1>
@@ -146,7 +238,7 @@ const ReservationConfirmation = () => {
               </div>
             </div>
           </div>
-          {isAuth?.Profile?.profileType === "Sitter" && (
+          {isAuth?.Profile?.profileType === "Owner" && (
             <div>
               <Button
                 onClick={completeHandler}
