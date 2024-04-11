@@ -4,6 +4,30 @@ import { isAuthenticated } from "../../utils/loginverify";
 
 const reservRouter = Router();
 
+reservRouter.post("/onereserv", isAuthenticated, async (req, res) => {
+  const { resId } = req.body;
+
+  const reserv = await prisma.reservation.findFirst({
+    where: { reserveId: resId },
+    include: {
+      owner: { select: { firstname: true, lastname: true, email: true } },
+      sitter: { select: { firstname: true, lastname: true, email: true } },
+    },
+  });
+
+  if (!reserv)
+    return res.json({
+      type: "error",
+      message: `Found no reservation.`,
+    });
+
+  return res.json({
+    type: "success",
+    message: `Found 1 reservation.`,
+    data: reserv,
+  });
+});
+
 reservRouter.post("/reserv", isAuthenticated, async (req, res) => {
   const userid = req.user.userid;
   const { status } = req.body;
@@ -111,7 +135,16 @@ reservRouter.post("/create", isAuthenticated, async (req, res) => {
         ownerId: userid,
         ChatRoom: {
           create: {
-            message: { create: { type: "text", messageText: messageTxt } },
+            message: {
+              create: {
+                type: "text",
+                messageText: messageTxt,
+                sender: { connect: { userId: userid } },
+                receiver: {
+                  connect: { userId: sitterId },
+                },
+              },
+            },
           },
         },
       },

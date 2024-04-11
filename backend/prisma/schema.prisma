@@ -29,6 +29,8 @@ model Client {
   reviewReceived    Review[]      @relation("reviewsReceived")
   sitterReservation Reservation[] @relation("sitterRes")
   ownerReservation  Reservation[] @relation("ownerRes")
+  messageSender     Message[]     @relation("senderMsg")
+  messageReceiver   Message[]     @relation("receiverMsg")
 }
 
 model Address {
@@ -109,4 +111,8 @@ model Message {
   path           String?
   messageText    String?
   createdAt      DateTime  @default(now())
+  sender         Client    @relation("senderMsg", fields: [senderId], references: [userId])
+  receiver       Client    @relation("receiverMsg", fields: [receiverId], references: [userId])
+  senderId       String
+  receiverId     String
 }

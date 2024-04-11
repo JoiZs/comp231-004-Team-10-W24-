@@ -283,6 +283,8 @@ const prisma = new PrismaClient();
       messageText: "Hi, dfsiosadjfiasi",
       createdAt: new Date(Date.now()),
       path: null,
+      senderId: egClients[0].userId,
+      receiverId: egClients[3].userId,
     },
     {
       chatId: randomUUID(),
@@ -291,6 +293,8 @@ const prisma = new PrismaClient();
       messageText: "Hi, jvnsvndsanvsaiu",
       createdAt: new Date(Date.now()),
       path: null,
+      senderId: egClients[2].userId,
+      receiverId: egClients[4].userId,
     },
   ];
   try {

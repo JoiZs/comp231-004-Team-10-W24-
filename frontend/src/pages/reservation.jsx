@@ -2,6 +2,7 @@ import { useLayoutEffect, useState } from "react";
 import axios from "axios";
 import { Button, Badge } from "@chakra-ui/react";
 import PopoverResvStatus from "../component/popoverResvStatus";
+import { Link } from "react-router-dom";
 
 const Reservation = () => {
   const [reserv, setReserv] = useState([]);
@@ -139,7 +140,9 @@ const Reservation = () => {
                 </div>
                 <div className="flex justify-end gap-2">
                   <PopoverResvStatus resv={el} />
-                  <Button variant={"solid"}>Chat</Button>
+                  <Link to={`/chat/${el.reserveId}`}>
+                    <Button variant={"solid"}>Chat</Button>
+                  </Link>
                 </div>
               </div>
             </div>

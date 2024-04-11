@@ -1,10 +1,8 @@
 import { ChakraProvider } from "@chakra-ui/react";
 import { BrowserRouter, Routes, Route } from "react-router-dom";
-import { Navigate } from 'react-router-dom';
-import { useContext } from 'react';
-import { AuthCtx } from './context/index.jsx';
+// import { useContext } from "react";
+// import { AuthCtx } from "./context/index.jsx";
 import { RegisterCtxProvider, AuthCtxProvider } from "./context";
-
 import Profile from "./pages/myprofile.jsx";
 import Registration from "./pages/registration";
 import Profile_sitter from "./pages/profile_sitter";
@@ -13,10 +11,11 @@ import Home from "./pages/Home";
 import Book from "./pages/Book";
 import Login from "./pages/login";
 import Reservation from "./pages/reservation";
+import ChatRoom from "./pages/chat.jsx";
+import ReservationConfirmation from "./pages/ReservationConfirmation";
 
 function App() {
-  const { isAuth } = useContext(AuthCtx);
-  console.log('isAuth:', isAuth);
+  // const { isAuth } = useContext(AuthCtx);
   return (
     <ChakraProvider>
       <AuthCtxProvider>
@@ -32,10 +31,15 @@ function App() {
                 />
                 <Route path="/me" element={<Profile />} />
                 {/* <Route path="/me" element={isAuth ? <Profile /> : <Navigate to="/login" />} /> */}
+                <Route path="/chat/:cid" element={<ChatRoom />} />
                 <Route path="/" element={<Home />}></Route>
                 <Route path="/book" element={<Book />}></Route>
                 <Route path="/login" element={<Login />}></Route>
                 <Route path="/reservations" element={<Reservation />} />
+                <Route
+                  path="/confirm/:rid"
+                  element={<ReservationConfirmation />}
+                />
               </Routes>
             </div>
           </BrowserRouter>
