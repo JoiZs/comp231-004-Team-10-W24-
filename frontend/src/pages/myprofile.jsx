@@ -69,6 +69,24 @@ export default function Profile() {
           <>
             <Badge>Available Slots</Badge>
             <Text>{profileData?.Profile?.availabilitySlot}</Text>
+            <div className="flex flex-row flex-wrap justify-between w-full">
+              <div>
+                <Badge>Availablility Start Date</Badge>
+                <Text>
+                  {new Date(
+                    profileData?.Profile?.availabilityStart
+                  ).toDateString()}
+                </Text>
+              </div>
+              <div>
+                <Badge>Availablility End Date</Badge>
+                <Text>
+                  {new Date(
+                    profileData?.Profile?.availabilityEnd
+                  ).toDateString()}
+                </Text>
+              </div>
+            </div>
           </>
         )}
       </VStack>

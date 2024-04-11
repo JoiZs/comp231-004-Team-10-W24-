@@ -51,7 +51,6 @@ export default function Home() {
     getSitters();
   }, [ratingState, nearby, pageNum]);
 
-  console.log(isAuth && nearby);
   return (
     <Container mt={5} maxW="container.md" color="black" rounded={10}>
       <Flex alignItems={"center"} padding={2} flexWrap={"wrap"}>

@@ -219,7 +219,8 @@ profileRouter.patch(
 );
 
 profileRouter.patch("/update", isAuthenticated, async (req, res) => {
-  const { address, fname, lname, pType, petSlot } = req.body;
+  const { address, fname, lname, pType, petSlot, avaDateEnd, avaDateStart } =
+    req.body;
 
   const userid = req.user.userid;
 
@@ -246,6 +247,8 @@ profileRouter.patch("/update", isAuthenticated, async (req, res) => {
           update: {
             ...(pType && { petType: pType }),
             ...(petSlot && { availabilitySlot: petSlot }),
+            ...(avaDateStart && { availabilityStart: new Date(avaDateStart) }),
+            ...(avaDateEnd && { availabilityEnd: new Date(avaDateEnd) }),
           },
         },
       },

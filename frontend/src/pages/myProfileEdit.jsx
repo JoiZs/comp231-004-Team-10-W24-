@@ -49,6 +49,11 @@ const EditProfile = (props) => {
         ...prevData,
         [name]: parseInt(value),
       }));
+    } else if (name === "avaDateEnd" || name === "avaDateStart") {
+      setFormData((prevData) => ({
+        ...prevData,
+        [name]: new Date(value),
+      }));
     } else {
       setFormData((prevData) => ({
         ...prevData,
@@ -155,6 +160,18 @@ const EditProfile = (props) => {
                 <>
                   <FormLabel>Pet Slot:</FormLabel>
                   <Input type="number" name="petSlot" onChange={handleChange} />
+                  <FormLabel>Availability Start:</FormLabel>
+                  <Input
+                    type="date"
+                    name="avaDateStart"
+                    onChange={handleChange}
+                  />
+                  <FormLabel>Availability End:</FormLabel>
+                  <Input
+                    type="date"
+                    name="avaDateEnd"
+                    onChange={handleChange}
+                  />
                 </>
               )}
 
@@ -170,8 +187,6 @@ const EditProfile = (props) => {
                 </InputRightElement>
               </InputGroup>
               {loc.map((el) => {
-                // Log to check the uniqueness of each `place_id`
-                console.log(el.place_id);
                 return (
                   <Tooltip label={el.display_name} key={el.place_id}>
                     <Input
