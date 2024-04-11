@@ -219,7 +219,7 @@ profileRouter.patch(
 );
 
 profileRouter.patch("/update", isAuthenticated, async (req, res) => {
-  const { address, fname, lname, pType } = req.body;
+  const { address, fname, lname, pType, petSlot } = req.body;
 
   const userid = req.user.userid;
 
@@ -242,7 +242,12 @@ profileRouter.patch("/update", isAuthenticated, async (req, res) => {
         },
         ...(fname && { firstname: fname }),
         ...(lname && { lastname: lname }),
-        Profile: { update: { ...(pType && { petType: pType }) } },
+        Profile: {
+          update: {
+            ...(pType && { petType: pType }),
+            ...(petSlot && { availabilitySlot: petSlot }),
+          },
+        },
       },
     });
   } catch (error) {

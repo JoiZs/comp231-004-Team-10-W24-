@@ -1,33 +1,26 @@
-import { useState, useEffect} from "react";
+import { useState, useEffect } from "react";
 import axios from "axios";
-import {
-  Text,
-  Heading,
-  Badge,
-  Avatar,
-  VStack,  
-} from "@chakra-ui/react";
+import { Text, Heading, Badge, Avatar, VStack } from "@chakra-ui/react";
 import EditProfile from "./myProfileEdit";
 
-export default function Profile() {   
+export default function Profile() {
   const [profileData, setProfileData] = useState(null);
   const [isLoading, setIsLoading] = useState(true);
-  
- 
-    const fetchProfileData = async () => {
-      try {
-        const response = await axios.get("http://localhost:4000/profile/me", {
-          withCredentials: true
-        });
-        setProfileData(response.data.data);
-        setIsLoading(false);
-        console.log("Pet types:", response.data.data.Profile.petType); // Logs the pet types
-      } catch (error) {
-        console.error("Error fetching profile data:", error);
-        setIsLoading(false);
-      }
-    };
-useEffect(()=>{
+
+  const fetchProfileData = async () => {
+    try {
+      const response = await axios.get("http://localhost:4000/profile/me", {
+        withCredentials: true,
+      });
+      setProfileData(response.data.data);
+      setIsLoading(false);
+      console.log("Pet types:", response.data.data.Profile.petType); // Logs the pet types
+    } catch (error) {
+      console.error("Error fetching profile data:", error);
+      setIsLoading(false);
+    }
+  };
+  useEffect(() => {
     fetchProfileData();
   }, []);
 
@@ -38,6 +31,8 @@ useEffect(()=>{
   if (!profileData) {
     return <div>Error: Unable to fetch profile data</div>;
   }
+
+  console.log(profileData);
 
   return (
     <div>
@@ -57,18 +52,27 @@ useEffect(()=>{
         <Badge>Email</Badge>
         <Text>{profileData.email}</Text>
         <Badge>Address</Badge>
-        <Text>{`${profileData?.address?.street},
+        <Text>
+          {`${profileData?.address?.street},
                 ${profileData?.address?.suburb},
                 ${profileData?.address?.city}
                 ${profileData?.address?.postalCode},
                 ${profileData?.address?.province}`}
         </Text>
         <Badge>Pet Type</Badge>
-        <Text>{profileData.Profile.petType && profileData.Profile.petType.length > 0 ? profileData.Profile.petType.join(', ') : 'Not specified'}</Text>
-        
+        <Text>
+          {profileData.Profile.petType && profileData.Profile.petType.length > 0
+            ? profileData.Profile.petType.join(", ")
+            : "Not specified"}
+        </Text>
+        {profileData?.Profile?.profileType === "Sitter" && (
+          <>
+            <Badge>Available Slots</Badge>
+            <Text>{profileData?.Profile?.availabilitySlot}</Text>
+          </>
+        )}
       </VStack>
-        <EditProfile onUpdate={fetchProfileData} />
-  
+      <EditProfile onUpdate={fetchProfileData} />
     </div>
   );
 }
