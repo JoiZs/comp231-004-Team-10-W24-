@@ -1,6 +1,7 @@
 import { Router } from "express";
 import prisma from "../../utils/prismaClient";
 import { isAuthenticated } from "../../utils/loginverify";
+import { validateBooking } from "../../utils/validatebookingdate";
 
 const reservRouter = Router();
 
@@ -127,6 +128,45 @@ reservRouter.post("/create", isAuthenticated, async (req, res) => {
       type: "error",
       message: "Incomplete input to create a reservation.",
     });
+
+  const checkResCount = await prisma.client.findFirst({
+    where: { userId: sitterId },
+    select: {
+      _count: {
+        select: { sitterReservation: { where: { status: "On-Going" } } },
+      },
+      Profile: {
+        select: {
+          availabilitySlot: true,
+          availabilityStart: true,
+          availabilityEnd: true,
+        },
+      },
+    },
+  });
+
+  if (
+    checkResCount?.Profile?.availabilitySlot! -
+      checkResCount?._count?.sitterReservation! <=
+    0
+  ) {
+    return res.json({
+      type: "error",
+      message: "Siiter can't accept reservation anymore.",
+    });
+  } else if (
+    !validateBooking(
+      checkIn,
+      checkOut,
+      checkResCount?.Profile?.availabilityStart!,
+      checkResCount?.Profile?.availabilityEnd!
+    )
+  ) {
+    return res.json({
+      type: "error",
+      message: "Siiter can't accept reservation with selected date.",
+    });
+  }
 
   try {
     await prisma.reservation.create({

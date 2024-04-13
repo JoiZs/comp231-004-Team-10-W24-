@@ -39,7 +39,7 @@ export default function Book({ sitterId }) {
             description: res.data.message,
             isClosable: true,
             onCloseComplete: () => {
-              navigate("/reservations");
+              if (res.data.type == "success") navigate("/reservations");
             },
           });
           // Store reservation data
@@ -115,13 +115,9 @@ export default function Book({ sitterId }) {
           </div>
         </div>
         <div className="p-2 w-full">
-          {showConfirmation ? (
-            <ReservationConfirmation reservationData={reservationData} />
-          ) : (
-            <Button onClick={bookHandler} colorScheme="blue" w={"full"}>
-              Book this for my pet
-            </Button>
-          )}
+          <Button onClick={bookHandler} colorScheme="blue" w={"full"}>
+            Book this for my pet
+          </Button>
         </div>
       </div>
     </div>

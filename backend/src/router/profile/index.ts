@@ -66,6 +66,9 @@ profileRouter.post("/sitters", async (req, res) => {
                 AND: [{ rating: { gte: sortByRating - 1 } }],
               },
             },
+            sitterReservation: {
+              where: { status: "On-Going" },
+            },
           },
         },
       },

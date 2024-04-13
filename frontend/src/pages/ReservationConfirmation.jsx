@@ -17,7 +17,7 @@ import { useParams } from "react-router-dom";
 import axios from "axios";
 import { AuthCtx } from "../context";
 
-const ReservationConfirmation = () => {
+const ReservationConfirmation = ({ iscomplete = true }) => {
   const { rid } = useParams();
   const [reserv, setReserv] = useState();
   const { isAuth } = useContext(AuthCtx);
@@ -238,7 +238,7 @@ const ReservationConfirmation = () => {
               </div>
             </div>
           </div>
-          {isAuth?.Profile?.profileType === "Owner" && (
+          {(isAuth?.Profile?.profileType === "Owner") & iscomplete && (
             <div>
               <Button
                 onClick={completeHandler}
