@@ -38,11 +38,7 @@ const Profile_Sitter = () => {
   useLayoutEffect(() => {
     const reqSiiterFn = async () => {
       await axios
-<<<<<<< HEAD
-        .get(`http://localhost:4000/profile/${uid}`)
-=======
         .get(`${import.meta.env.VITE_SERV_URL}/profile/${uid}`)
->>>>>>> b2d7069 (build(docker): dockerize the app)
         .then((res) => {
           if (res.data) setSitterInfo(res.data);
         })

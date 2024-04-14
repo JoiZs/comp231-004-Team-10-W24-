@@ -6,21 +6,13 @@
   "scripts": {
     "dev": "nodemon src/index.ts",
     "build": "tsc",
-<<<<<<< HEAD
-    "start": "node dist/index.js",
-=======
     "start": "node dist/src/index.js",
->>>>>>> b2d7069 (build(docker): dockerize the app)
     "seed": "ts-node prisma/seeds.ts"
   },
   "keywords": [],
   "author": "",
   "license": "ISC",
   "dependencies": {
-<<<<<<< HEAD
-    "@lmdb/lmdb-win32-x64": "^3.0.3",
-=======
->>>>>>> b2d7069 (build(docker): dockerize the app)
     "@prisma/client": "^5.10.2",
     "@types/validator": "^13.11.9",
     "argon2": "^0.40.1",

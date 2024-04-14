@@ -19,11 +19,7 @@ export default function Book({ sitterId }) {
   const bookHandler = async () => {
     await axios
       .post(
-<<<<<<< HEAD
-        "http://localhost:4000/reserve/create",
-=======
         import.meta.env.VITE_SERV_URL + "/reserve/create",
->>>>>>> b2d7069 (build(docker): dockerize the app)
         {
           sitterId: sitterId,
           petCount: parseInt(numOfPet.current.value),

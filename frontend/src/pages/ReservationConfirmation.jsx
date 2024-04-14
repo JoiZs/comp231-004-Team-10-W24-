@@ -34,11 +34,7 @@ const ReservationConfirmation = ({ iscomplete = true }) => {
     const getConfirm = async () => {
       await axios
         .post(
-<<<<<<< HEAD
-          "http://localhost:4000/reserve/onereserv",
-=======
           import.meta.env.VITE_SERV_URL + "/reserve/onereserv",
->>>>>>> b2d7069 (build(docker): dockerize the app)
           { resId: rid },
           {
             withCredentials: true,
@@ -55,11 +51,7 @@ const ReservationConfirmation = ({ iscomplete = true }) => {
   const completeHandler = async () => {
     await axios
       .patch(
-<<<<<<< HEAD
-        "http://localhost:4000/reserve/acpt_updatereserv",
-=======
         import.meta.env.VITE_SERV_URL + "/reserve/acpt_updatereserv",
->>>>>>> b2d7069 (build(docker): dockerize the app)
         { resvId: rid, status: "Completed" },
         {
           withCredentials: true,
@@ -86,11 +78,7 @@ const ReservationConfirmation = ({ iscomplete = true }) => {
   const reviewHandler = async () => {
     await axios
       .post(
-<<<<<<< HEAD
-        "http://localhost:4000/review/postreview",
-=======
         import.meta.env.VITE_SERV_URL + "/review/postreview",
->>>>>>> b2d7069 (build(docker): dockerize the app)
         {
           rating: parseFloat(ratingRef.current.value),
           comment: cmtRef.current.value,

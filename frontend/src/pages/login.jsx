@@ -16,11 +16,7 @@ const Login = () => {
     event.preventDefault();
     await axios
       .post(
-<<<<<<< HEAD
-        "http://localhost:4000/auth/login",
-=======
         import.meta.env.VITE_SERV_URL + "/auth/login",
->>>>>>> b2d7069 (build(docker): dockerize the app)
         { email: username, password },
         { withCredentials: true }
       )
@@ -34,11 +30,7 @@ const Login = () => {
           onCloseComplete: async () => {
             if (res.data.type == "success") {
               await axios
-<<<<<<< HEAD
-                .get("http://localhost:4000/profile/me", {
-=======
                 .get(import.meta.env.VITE_SERV_URL + "/profile/me", {
->>>>>>> b2d7069 (build(docker): dockerize the app)
                   withCredentials: true,
                 })
                 .then((res) => {

@@ -7,11 +7,7 @@ const ReservChangeSitter = ({ reservId }) => {
   const changeStatusHandler = async (st) => {
     await axios
       .patch(
-<<<<<<< HEAD
-        "http://localhost:4000/reserve/acpt_updatereserv",
-=======
         import.meta.env.VITE_SERV_URL + "/reserve/acpt_updatereserv",
->>>>>>> b2d7069 (build(docker): dockerize the app)
         {
           resvId: reservId,
           status: st,

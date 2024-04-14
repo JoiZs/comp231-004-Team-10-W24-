@@ -9,11 +9,7 @@ function Registration3() {
 
   const submitHandler = async () => {
     await axios
-<<<<<<< HEAD
-      .post("http://localhost:4000/auth/register", registerPl)
-=======
       .post(import.meta.env.VITE_SERV_URL + "/auth/register", registerPl)
->>>>>>> b2d7069 (build(docker): dockerize the app)
       .then((res) => {
         toast({
           status: res.data.type,

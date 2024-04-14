@@ -12,11 +12,7 @@ const Reservation = () => {
     const reqReserv = async () => {
       await axios
         .post(
-<<<<<<< HEAD
-          "http://localhost:4000/reserve/reserv",
-=======
           import.meta.env.VITE_SERV_URL + "/reserve/reserv",
->>>>>>> b2d7069 (build(docker): dockerize the app)
           { status: resStatus },
           {
             withCredentials: true,

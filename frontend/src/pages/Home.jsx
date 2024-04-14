@@ -30,11 +30,7 @@ export default function Home() {
     const getSitters = async () => {
       await axios
         .post(
-<<<<<<< HEAD
-          "http://localhost:4000/profile/sitters",
-=======
           import.meta.env.VITE_SERV_URL + "/profile/sitters",
->>>>>>> b2d7069 (build(docker): dockerize the app)
           {
             sortByRating: ratingState,
             sortByLocation: isAuth && nearby,

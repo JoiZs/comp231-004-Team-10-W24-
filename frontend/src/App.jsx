@@ -1,9 +1,4 @@
-<<<<<<< HEAD
-
-import { ChakraProvider,Box } from "@chakra-ui/react";
-=======
 import { ChakraProvider } from "@chakra-ui/react";
->>>>>>> b2d7069 (build(docker): dockerize the app)
 import { BrowserRouter, Routes, Route } from "react-router-dom";
 // import { useContext } from "react";
 // import { AuthCtx } from "./context/index.jsx";
@@ -19,23 +14,10 @@ import Reservation from "./pages/reservation";
 import ChatRoom from "./pages/chat.jsx";
 import ReservationConfirmation from "./pages/ReservationConfirmation";
 
-<<<<<<< HEAD
-import Registration from "./layout/registration";
-
-// import Profile_sitter from '../component/profile_sitter';
-// import Profile_owner from '../component/profile_owner';
-
-
-=======
->>>>>>> b2d7069 (build(docker): dockerize the app)
 function App() {
   // const { isAuth } = useContext(AuthCtx);
   return (
     <ChakraProvider>
-<<<<<<< HEAD
-
-=======
->>>>>>> b2d7069 (build(docker): dockerize the app)
       <AuthCtxProvider>
         <RegisterCtxProvider>
           <BrowserRouter>
@@ -63,22 +45,6 @@ function App() {
           </BrowserRouter>
         </RegisterCtxProvider>
       </AuthCtxProvider>
-<<<<<<< HEAD
-      <BrowserRouter>
-        <RegisterCtxProvider>
-          <Box minHeight={"full"} display={"flex"}>
-            <Routes>
-              <Route path="/register" element={<Registration />} />
-              {/* <Route path="/profile_sitter" element={<Profile_sitter />} />
-        <Route path="/profile_owner" element={<Profile_owner />} /> */}
-              {/* Define other routes here */}
-            </Routes>
-          </Box>
-        </RegisterCtxProvider>
-      </BrowserRouter>
-
-=======
->>>>>>> b2d7069 (build(docker): dockerize the app)
     </ChakraProvider>
   );
 }

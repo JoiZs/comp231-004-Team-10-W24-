@@ -1,7 +1,3 @@
-<<<<<<< HEAD
-
-=======
->>>>>>> b2d7069 (build(docker): dockerize the app)
 import { useLayoutEffect, useState } from "react";
 import { createContext, useContext } from "react";
 import axios from "axios";
@@ -17,13 +13,9 @@ export const AuthCtxProvider = ({ children }) => {
   useLayoutEffect(() => {
     const checkAuthReq = async () => {
       await axios
-<<<<<<< HEAD
-        .get("http://localhost:4000/profile/me", { withCredentials: true })
-=======
         .get(import.meta.env.VITE_SERV_URL + "/profile/me", {
           withCredentials: true,
         })
->>>>>>> b2d7069 (build(docker): dockerize the app)
         .then((res) => {
           if (res.data?.type == "success") setIsAuth(res.data.data);
           else {
