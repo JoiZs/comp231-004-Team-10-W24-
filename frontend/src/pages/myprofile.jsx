@@ -9,7 +9,6 @@ export default function Profile() {
 
   const fetchProfileData = async () => {
     try {
-      );
       setProfileData(response.data.data);
       setIsLoading(false);
       console.log("Pet types:", response.data.data.Profile.petType); // Logs the pet types
