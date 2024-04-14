@@ -1,8 +1,33 @@
 import { Router } from "express";
 import prisma from "../../utils/prismaClient";
 import { isAuthenticated } from "../../utils/loginverify";
+import { validateBooking } from "../../utils/validatebookingdate";
 
 const reservRouter = Router();
+
+reservRouter.post("/onereserv", isAuthenticated, async (req, res) => {
+  const { resId } = req.body;
+
+  const reserv = await prisma.reservation.findFirst({
+    where: { reserveId: resId },
+    include: {
+      owner: { select: { firstname: true, lastname: true, email: true } },
+      sitter: { select: { firstname: true, lastname: true, email: true } },
+    },
+  });
+
+  if (!reserv)
+    return res.json({
+      type: "error",
+      message: `Found no reservation.`,
+    });
+
+  return res.json({
+    type: "success",
+    message: `Found 1 reservation.`,
+    data: reserv,
+  });
+});
 
 reservRouter.post("/reserv", isAuthenticated, async (req, res) => {
   const userid = req.user.userid;
@@ -63,10 +88,16 @@ reservRouter.patch("/acpt_updatereserv", isAuthenticated, async (req, res) => {
   const { resvId, status = "Pending" } = req.body;
 
   try {
-    await prisma.reservation.update({
-      where: { reserveId: resvId, sitterId: userid },
-      data: { status: status },
-    });
+    if (status === "Completed") {
+      await prisma.reservation.update({
+        where: { reserveId: resvId, ownerId: userid },
+        data: { status: status },
+      });
+    } else
+      await prisma.reservation.update({
+        where: { reserveId: resvId, sitterId: userid },
+        data: { status: status },
+      });
   } catch (error) {
     if (error) {
       console.log(error);
@@ -98,6 +129,45 @@ reservRouter.post("/create", isAuthenticated, async (req, res) => {
       message: "Incomplete input to create a reservation.",
     });
 
+  const checkResCount = await prisma.client.findFirst({
+    where: { userId: sitterId },
+    select: {
+      _count: {
+        select: { sitterReservation: { where: { status: "On-Going" } } },
+      },
+      Profile: {
+        select: {
+          availabilitySlot: true,
+          availabilityStart: true,
+          availabilityEnd: true,
+        },
+      },
+    },
+  });
+
+  if (
+    checkResCount?.Profile?.availabilitySlot! -
+      checkResCount?._count?.sitterReservation! <=
+    0
+  ) {
+    return res.json({
+      type: "error",
+      message: "Siiter can't accept reservation anymore.",
+    });
+  } else if (
+    !validateBooking(
+      checkIn,
+      checkOut,
+      checkResCount?.Profile?.availabilityStart!,
+      checkResCount?.Profile?.availabilityEnd!
+    )
+  ) {
+    return res.json({
+      type: "error",
+      message: "Siiter can't accept reservation with selected date.",
+    });
+  }
+
   try {
     await prisma.reservation.create({
       data: {
@@ -111,7 +181,16 @@ reservRouter.post("/create", isAuthenticated, async (req, res) => {
         ownerId: userid,
         ChatRoom: {
           create: {
-            message: { create: { type: "text", messageText: messageTxt } },
+            message: {
+              create: {
+                type: "text",
+                messageText: messageTxt,
+                sender: { connect: { userId: userid } },
+                receiver: {
+                  connect: { userId: sitterId },
+                },
+              },
+            },
           },
         },
       },

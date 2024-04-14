@@ -60,7 +60,6 @@ import passport from "passport";
   io.engine.use(onlyForHandshake(passport.session()));
 
   io.use((socket, next) => {
-    console.log(socket.request.user);
     if (!socket.request.user) {
       // Emit event to client for redirection or error display
       socket.emit("unauthorized");

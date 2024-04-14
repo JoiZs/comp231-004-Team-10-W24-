@@ -143,7 +143,7 @@ export default function Home() {
               key={el.userId}
               uid={el.userId}
               Name={el.firstname + " " + el.lastname}
-              Ava={el.Profile.availabilitySlot}
+              Ava={el.Profile.availabilitySlot - el._count.sitterReservation}
               PetType={el.Profile.petType}
               Rating={el.rating}
               Distance={el.distance}

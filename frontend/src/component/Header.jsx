@@ -2,6 +2,15 @@ import { Link, useNavigate } from "react-router-dom";
 import { useContext } from "react";
 import { AuthCtx } from "../context";
 import axios from "axios";
+import {
+  Badge,
+  Menu,
+  MenuButton,
+  MenuList,
+  MenuItem,
+  Button,
+} from "@chakra-ui/react";
+import { ChevronDownIcon } from "@chakra-ui/icons";
 
 export default function Header() {
   const { isAuth, setIsAuth } = useContext(AuthCtx);
@@ -29,19 +38,35 @@ export default function Header() {
           </Link>
           <span className="text-yellow-600">BnB</span>
         </h1>
-        <div className="flex gap-4">
+        <div className="flex gap-4 items-center text-sm">
           <Link to={"/"}>
             <span>Home</span>
           </Link>
           {isAuth ? (
-            <>
-              <Link to="/reservations">Reservations</Link>
-              <Link to="/me">Profile</Link>
-            </>
+            <Menu>
+              <MenuButton
+                cursor={"pointer"}
+                as={Badge}
+                variant={"solid"}
+                colorScheme="blue"
+              >
+                {isAuth.firstname + " " + isAuth.lastname} <ChevronDownIcon />
+              </MenuButton>
+              <MenuList p={2}>
+                <MenuItem as={Link} to={"/reservations"}>
+                  Reservations
+                </MenuItem>
+                <MenuItem as={Link} to={"/me"}>
+                  My Profile
+                </MenuItem>
+                <MenuItem as={Button} size={"xs"} onClick={LogoutHandler}>
+                  Logout
+                </MenuItem>
+              </MenuList>
+            </Menu>
           ) : (
             <Link to="/login">Login</Link>
           )}
-          {isAuth && <button onClick={LogoutHandler}>Logout</button>}
         </div>
       </div>
     </header>

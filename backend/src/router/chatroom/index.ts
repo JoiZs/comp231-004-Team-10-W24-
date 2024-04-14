@@ -6,15 +6,35 @@ const chatroomRouter = Router();
 
 chatroomRouter.post("/reserv", isAuthenticated, async (req, res) => {
   const userid = req.user.userid;
-  const { reservId, msgScroll = 1 } = req.body;
+  const { reservId, scrollBox = 1 } = req.body;
 
   const chatRoom = await prisma.chatRoom.findFirst({
     where: {
       reservationId: reservId,
       reservation: { OR: [{ sitterId: userid }, { ownerId: userid }] },
     },
-    select: {
-      message: { take: 10 * msgScroll, orderBy: { createdAt: "desc" } },
+    include: {
+      reservation: {
+        select: {
+          owner: {
+            select: {
+              userId: true,
+              firstname: true,
+              lastname: true,
+              followedBy: { select: { userId: true } },
+            },
+          },
+          sitter: {
+            select: {
+              userId: true,
+              firstname: true,
+              lastname: true,
+              followedBy: { select: { userId: true } },
+            },
+          },
+        },
+      },
+      message: { take: 25 * scrollBox, orderBy: { createdAt: "desc" } },
     },
   });
 
@@ -24,7 +44,13 @@ chatroomRouter.post("/reserv", isAuthenticated, async (req, res) => {
   return res.json({
     type: "success",
     message: "Messages are found in the chatroom.",
-    data: chatRoom,
+    data: {
+      ...chatRoom,
+      isOwner: chatRoom.reservation.owner.userId === userid,
+      isFollowed: chatRoom.reservation.sitter.followedBy.some(
+        (fl) => fl.userId === userid
+      ),
+    },
   });
 });
 

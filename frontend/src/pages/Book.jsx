@@ -1,7 +1,8 @@
-import React, { useRef } from "react";
+import React, { useRef, useState } from "react";
 import { Select, Button, useToast } from "@chakra-ui/react";
 import axios from "axios";
 import { useNavigate } from "react-router-dom";
+import ReservationConfirmation from "./ReservationConfirmation";
 
 export default function Book({ sitterId }) {
   const checkInDate = useRef();
@@ -12,6 +13,8 @@ export default function Book({ sitterId }) {
   const msgRef = useRef();
   const toast = useToast();
   const navigate = useNavigate();
+  const [showConfirmation, setShowConfirmation] = useState(false);
+  const [reservationData, setReservationData] = useState(null);
 
   const bookHandler = async () => {
     await axios
@@ -36,9 +39,21 @@ export default function Book({ sitterId }) {
             description: res.data.message,
             isClosable: true,
             onCloseComplete: () => {
-              navigate("/reservations");
+              if (res.data.type == "success") navigate("/reservations");
             },
           });
+          // Store reservation data
+          setReservationData({
+            sitterId: sitterId,
+            petCount: parseInt(numOfPet.current.value),
+            petType: petType.current.value,
+            checkIn: new Date(checkInDate.current.value),
+            checkOut: new Date(checkOutDate.current.value),
+            ratePerDay: parseFloat(dayRate.current.value),
+            messageTxt: msgRef.current.value,
+          });
+          // Show confirmation dialog
+          setShowConfirmation(true);
         }
       })
       .catch((err) => {
