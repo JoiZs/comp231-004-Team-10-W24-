@@ -72,6 +72,7 @@ import passport from "passport";
     const userid = socket.request.user.userid;
 
     socket.on("sendMsg", (payload) =>
+<<<<<<< HEAD
       converse(
         userid,
         payload.receiver,
@@ -80,6 +81,9 @@ import passport from "passport";
         io,
         socket
       )
+=======
+      converse(userid, payload.receiver, payload.roomid, payload.msg, io)
+>>>>>>> b2d7069 (build(docker): dockerize the app)
     );
   });
 

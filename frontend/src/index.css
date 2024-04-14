@@ -1,4 +1,7 @@
+<<<<<<< HEAD
 
+=======
+>>>>>>> b2d7069 (build(docker): dockerize the app)
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
@@ -16,3 +19,7 @@ button.green {
   min-height: 100vh;
   display: flex;
   flex-direction: column;
+<<<<<<< HEAD
+=======
+}
+>>>>>>> b2d7069 (build(docker): dockerize the app)

@@ -9,7 +9,11 @@ function Registration3() {
 
   const submitHandler = async () => {
     await axios
+<<<<<<< HEAD
       .post("http://localhost:4000/auth/register", registerPl)
+=======
+      .post(import.meta.env.VITE_SERV_URL + "/auth/register", registerPl)
+>>>>>>> b2d7069 (build(docker): dockerize the app)
       .then((res) => {
         toast({
           status: res.data.type,
@@ -43,7 +47,10 @@ function Registration3() {
       <Badge colorScheme="teal">User Type</Badge>
       <span>{registerPl.userType}</span>
       <Divider />
+<<<<<<< HEAD
 
+=======
+>>>>>>> b2d7069 (build(docker): dockerize the app)
       <Button colorScheme="blue" onClick={submitHandler} w={"full"}>
         Submit
       </Button>

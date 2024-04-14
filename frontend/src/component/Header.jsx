@@ -18,7 +18,11 @@ export default function Header() {
 
   const LogoutHandler = async () => {
     await axios
+<<<<<<< HEAD
       .delete("http://localhost:4000/auth/logout", {
+=======
+      .delete(import.meta.env.VITE_SERV_URL + "/auth/logout", {
+>>>>>>> b2d7069 (build(docker): dockerize the app)
         withCredentials: true,
       })
       .then((res) => {

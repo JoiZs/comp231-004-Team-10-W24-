@@ -1,0 +1,69 @@
+version: "3.9"
+
+services:
+  # nginx:
+  #   image: nginx:alpine
+  #   restart: on-failure
+  #   networks:
+  #     - petnet
+  #   ports: "81:81"
+  #   volumes:
+  #     - ./nginx/petclient.pyaesoneaung.com.conf:/etc/nginx/
+
+  postgres:
+    image: postgres:15
+    restart: on-failure
+    networks:
+      - petnet
+    # ports:
+    #   - "5432:5432"
+    volumes:
+      - postgres_pet:/var/lib/postgresql/pet
+    environment:
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: 123
+      POSTGRES_DB: pet
+
+  pet_server:
+    image: petserver
+    restart: on-failure
+    build:
+      context: ./backend/
+    env_file:
+      - ./backend/.env.production
+    networks:
+      - petnet
+    ports:
+      - "4000:4000"
+    volumes:
+      - ./:/backend
+    depends_on:
+      - postgres
+    links:
+      - postgres
+    command: >
+      bash -c "npx prisma migrate dev && npm start"
+
+  pet_client:
+    image: petclient
+    restart: on-failure
+    build:
+      context: ./frontend/
+    env_file:
+      - ./frontend/.env.production
+    networks:
+      - petnet
+    ports:
+      - "80:80"
+    volumes:
+      - ./:/frontend/
+    depends_on:
+      - pet_server
+
+volumes:
+  postgres_pet:
+    driver: local
+
+networks:
+  petnet:
+    driver: bridge

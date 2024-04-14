@@ -1,0 +1,5 @@
+FROM nginx:alpine
+RUN rm /etc/nginx/conf.d/default.conf
+
+COPY ./petclient.pyaesoneaung.com.conf /etc/nginx/conf.d/petclient.pyaesoneaung.com.conf
+COPY ./petserver.pyaesoneaung.com.conf /etc/nginx/conf.d/petserver.pyaesoneaung.com.conf

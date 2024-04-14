@@ -32,7 +32,11 @@ const ChatRoom = () => {
     const getRoom = async () => {
       await axios
         .post(
+<<<<<<< HEAD
           "http://localhost:4000/chat/reserv",
+=======
+          import.meta.env.VITE_SERV_URL + "/chat/reserv",
+>>>>>>> b2d7069 (build(docker): dockerize the app)
           { reservId: cid, scrollBox: scrollPg },
           { withCredentials: true }
         )
@@ -65,7 +69,11 @@ const ChatRoom = () => {
     if (isRoom?.isFollowed) {
       await axios
         .patch(
+<<<<<<< HEAD
           "http://localhost:4000/profile/unsub",
+=======
+          import.meta.env.VITE_SERV_URL + "/profile/unsub",
+>>>>>>> b2d7069 (build(docker): dockerize the app)
           { sitterId: isRoom?.reservation?.sitter?.userId },
           { withCredentials: true }
         )
@@ -80,7 +88,11 @@ const ChatRoom = () => {
     } else {
       await axios
         .patch(
+<<<<<<< HEAD
           "http://localhost:4000/profile/sub",
+=======
+          import.meta.env.VITE_SERV_URL + "/profile/sub",
+>>>>>>> b2d7069 (build(docker): dockerize the app)
           { sitterId: isRoom?.reservation?.sitter?.userId },
           { withCredentials: true }
         )
