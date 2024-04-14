@@ -43,7 +43,8 @@ function Registration3() {
       <Badge colorScheme="teal">User Type</Badge>
       <span>{registerPl.userType}</span>
       <Divider />
-      <Button colorScheme="teal" onClick={submitHandler} w={"full"}>
+
+      <Button colorScheme="blue" onClick={submitHandler} w={"full"}>
         Submit
       </Button>
     </HStack>

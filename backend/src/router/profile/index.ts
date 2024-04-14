@@ -5,6 +5,7 @@ import { isDate } from "validator";
 import { deleteImg, resizeImg, uploadImg } from "../../utils/imgupload";
 import { isAuthenticated } from "../../utils/loginverify";
 import { getDistance } from "geolib";
+import _ from "lodash";
 
 const profileRouter = Router();
 
@@ -28,7 +29,11 @@ profileRouter.get("/me", isAuthenticated, async (req, res) => {
     },
   });
 
-  return res.json(excludeEntry(findUser, ["password"]));
+  return res.json({
+    data: excludeEntry(findUser, ["password"]),
+    type: "success",
+    message: "Authenticated.",
+  });
 });
 
 profileRouter.post("/sitters", async (req, res) => {
@@ -36,61 +41,72 @@ profileRouter.post("/sitters", async (req, res) => {
 
   const { pageNum = 1, sortByRating = 4, sortByLocation = false } = req.body;
 
-  if (!sortByLocation) {
-    await prisma.review
-      .groupBy({
-        by: ["receiverId"],
-        skip: (pageNum - 1) * 5,
-        _avg: { rating: true },
-        take: 5,
-        having: {
-          rating: {
-            _avg: {
-              gte: sortByRating,
+  await prisma.client
+    .findMany({
+      skip: (pageNum - 1) * 5,
+      take: 5,
+      orderBy: { userId: "desc" },
+      select: {
+        userId: true,
+        firstname: true,
+        lastname: true,
+        address: { select: { latitude: true, longitude: true } },
+        Profile: {
+          select: {
+            img: true,
+            availabilitySlot: true,
+            petType: true,
+          },
+        },
+        _count: {
+          select: {
+            reviewReceived: {
+              // where: { rating: { gte: sortByRating } },
+              where: {
+                AND: [{ rating: { gte: sortByRating - 1 } }],
+              },
+            },
+            sitterReservation: {
+              where: { status: "On-Going" },
             },
           },
         },
-        orderBy: { receiverId: "desc" },
-      })
-      .then(async (result) => {
-        const restCount = await prisma.review.count({
-          skip: pageNum * 5,
-          where: { rating: { gte: sortByRating } },
-          orderBy: { rating: "desc" },
-        });
+      },
+      where: {
+        userId: { not: userid },
+        Profile: { profileType: "Sitter" },
+        reviewReceived: { every: { rating: { gte: sortByRating - 1 } } },
+      },
+    })
+    .then(async (result) => {
+      const restCount = await prisma.client.count({
+        skip: pageNum * 5,
+        orderBy: { userId: "desc" },
+      });
 
-        const currentUserLoc = userid
-          ? await prisma.address.findFirst({
-              where: { userUserId: userid },
-              select: { latitude: true, longitude: true },
-            })
-          : undefined;
+      const currentUserLoc = userid
+        ? await prisma.address.findFirst({
+            where: { userUserId: userid },
+            select: { latitude: true, longitude: true },
+          })
+        : undefined;
 
-        const sitterPromises = result.map(async (el) => {
-          const sitterData = await prisma.client.findFirst({
-            select: {
-              userId: true,
-              firstname: true,
-              lastname: true,
-              address: { select: { latitude: true, longitude: true } },
-              Profile: {
-                select: {
-                  img: true,
-                  availabilitySlot: true,
-                  petType: true,
-                },
-              },
-            },
-            where: { userId: el.receiverId },
+      const sitterPromises = result
+        .filter((ft) => (sortByRating > 0 ? ft._count.reviewReceived > 0 : ft))
+        .map(async (el) => {
+          const sitterData = await prisma.review.aggregate({
+            _avg: { rating: true },
+            orderBy: { receiverId: "desc" },
+            where: { receiverId: el.userId },
           });
 
           if (
             !currentUserLoc?.latitude ||
             !currentUserLoc.longitude ||
-            !sitterData?.address?.latitude ||
-            !sitterData.address.longitude
+            !el.address?.latitude ||
+            !el.address.longitude
           ) {
-            return sitterData;
+            return { rating: sitterData._avg.rating, ...el };
           } else {
             const distance =
               getDistance(
@@ -99,26 +115,28 @@ profileRouter.post("/sitters", async (req, res) => {
                   longitude: currentUserLoc.longitude,
                 },
                 {
-                  latitude: sitterData?.address?.latitude,
-                  longitude: sitterData?.address?.longitude,
+                  latitude: el?.address?.latitude,
+                  longitude: el?.address?.longitude,
                 }
               ) / 1000;
-            return { ...sitterData, distance };
+
+            return { rating: sitterData._avg.rating, distance, ...el };
           }
         });
 
-        const finalResults = await Promise.all(sitterPromises);
+      const finalResults = await Promise.all(sitterPromises);
 
-        return res.json({
-          type: "success",
-          message: `Found ${result.length} sitters`,
-          data: {
-            remaining: restCount,
-            sitters: finalResults,
-          },
-        });
+      return res.json({
+        type: "success",
+        message: `Found ${result.length} sitters`,
+        data: {
+          remaining: restCount,
+          sitters: !sortByLocation
+            ? finalResults
+            : _.sortBy(finalResults, ["distance"]),
+        },
       });
-  }
+    });
 });
 
 profileRouter.get("/:stid", async (req, res) => {
@@ -129,10 +147,28 @@ profileRouter.get("/:stid", async (req, res) => {
     },
     include: {
       address: true,
+      Profile: {
+        select: {
+          availabilitySlot: true,
+          img: true,
+          availabilityStart: true,
+          availabilityEnd: true,
+        },
+      },
       followedBy: {
         select: { firstname: true, lastname: true },
       },
-      reviewReceived: true,
+      _count: { select: { reviewReceived: true } },
+      reviewReceived: {
+        select: {
+          comment: true,
+          rating: true,
+          createdAt: true,
+          givenBy: { select: { firstname: true, lastname: true } },
+        },
+        take: 3,
+        orderBy: { rating: "desc" },
+      },
     },
   });
 
@@ -186,7 +222,8 @@ profileRouter.patch(
 );
 
 profileRouter.patch("/update", isAuthenticated, async (req, res) => {
-  const { address, fname, lname, pType } = req.body;
+  const { address, fname, lname, pType, petSlot, avaDateEnd, avaDateStart } =
+    req.body;
 
   const userid = req.user.userid;
 
@@ -195,11 +232,28 @@ profileRouter.patch("/update", isAuthenticated, async (req, res) => {
       where: { userId: userid },
       data: {
         address: {
-          update: { ...(address && { address: address }) },
+          update: {
+            ...(address && {
+              city: address.city,
+              street: address.street,
+              postalCode: address.postalCode,
+              province: address.province,
+              suburb: address.suburb,
+              latitude: address.lat,
+              longitude: address.long,
+            }),
+          },
         },
         ...(fname && { firstname: fname }),
         ...(lname && { lastname: lname }),
-        Profile: { update: { ...(pType && { petType: pType }) } },
+        Profile: {
+          update: {
+            ...(pType && { petType: pType }),
+            ...(petSlot && { availabilitySlot: petSlot }),
+            ...(avaDateStart && { availabilityStart: new Date(avaDateStart) }),
+            ...(avaDateEnd && { availabilityEnd: new Date(avaDateEnd) }),
+          },
+        },
       },
     });
   } catch (error) {
@@ -265,6 +319,7 @@ profileRouter.patch("/sub", isAuthenticated, async (req, res) => {
       },
     });
   } catch (error) {
+    console.log(error);
     if (error)
       return res.json({ type: "error", message: "Error on following user." });
   }

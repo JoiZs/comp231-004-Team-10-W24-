@@ -9,29 +9,15 @@ export const converse = async (
   io: Server,
   sk: Socket
 ) => {
-  const findMsgRoom = await prisma.chatRoom.findFirst({
-    where: {
-      roomId: roomid,
-      reservation: {
-        OR: [
-          { ownerId: sender, sitterId: receiver },
-          { ownerId: receiver, sitterId: sender },
-        ],
-      },
-    },
-  });
-
-  if (!findMsgRoom) {
-    io.emit("sendMsg", { type: "error", message: "No room found." });
-  }
-
   if (msg.type == "text") {
     await prisma.message
       .create({
         data: {
-          ChatRoom: { connect: { roomId: roomid } },
           type: msg.type,
           messageText: msg.msgTxt,
+          chatRoomRoomId: roomid,
+          senderId: sender,
+          receiverId: receiver,
         },
       })
       .then((res) => {
@@ -42,6 +28,6 @@ export const converse = async (
         });
       });
   } else if (msg.type == "img") {
-    console.log(msg.img);
+    // console.log(msg.img);
   }
 };

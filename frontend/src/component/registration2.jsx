@@ -70,7 +70,7 @@ function Registration2({ setPgNum }) {
           <Radio value="Sitter">Sitter</Radio>
         </HStack>
       </RadioGroup>
-      <Button colorScheme="teal" onClick={infoHandler} w={"full"}>
+      <Button colorScheme="blue" onClick={infoHandler} w={"full"}>
         Next
       </Button>
     </HStack>

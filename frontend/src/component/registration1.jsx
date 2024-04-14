@@ -12,7 +12,12 @@ import { SearchIcon } from "@chakra-ui/icons";
 import axios from "axios";
 import { locationIQtk } from "../consts";
 
+import { Text } from '@chakra-ui/react'
+
+
+
 // eslint-disable-next-line react/prop-types
+
 function Registration1({ setPgNum }) {
   const { _registerPl, setRegisterPl } = useContext(RegisterCtx);
   const [loc, setLoc] = useState([]);
@@ -54,7 +59,9 @@ function Registration1({ setPgNum }) {
         <Input ref={SearchRef} placeholder="Search Location" />
         <InputRightElement>
           <IconButton
-            colorScheme="teal"
+
+            colorScheme="blue"
+
             onClick={addressHandler}
             icon={<SearchIcon />}
           />
@@ -82,9 +89,12 @@ function Registration1({ setPgNum }) {
             whiteSpace={"nowrap"}
             overflow={"hidden"}
           />
-        </Tooltip>
+
+        </Tooltip>        
       ))}
+      <Text fontSize='sm'>For best result, use this format: house number, street, neighbourhood, city, state, country, postcode</Text>
     </VStack>
+
   );
 }
 

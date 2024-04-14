@@ -1,11 +1,35 @@
 import { Router } from "express";
 import prisma from "../../utils/prismaClient";
-import { isDate } from "validator";
 import { isAuthenticated } from "../../utils/loginverify";
+import { validateBooking } from "../../utils/validatebookingdate";
 
 const reservRouter = Router();
 
-reservRouter.get("/reserv", isAuthenticated, async (req, res) => {
+reservRouter.post("/onereserv", isAuthenticated, async (req, res) => {
+  const { resId } = req.body;
+
+  const reserv = await prisma.reservation.findFirst({
+    where: { reserveId: resId },
+    include: {
+      owner: { select: { firstname: true, lastname: true, email: true } },
+      sitter: { select: { firstname: true, lastname: true, email: true } },
+    },
+  });
+
+  if (!reserv)
+    return res.json({
+      type: "error",
+      message: `Found no reservation.`,
+    });
+
+  return res.json({
+    type: "success",
+    message: `Found 1 reservation.`,
+    data: reserv,
+  });
+});
+
+reservRouter.post("/reserv", isAuthenticated, async (req, res) => {
   const userid = req.user.userid;
   const { status } = req.body;
 
@@ -13,6 +37,11 @@ reservRouter.get("/reserv", isAuthenticated, async (req, res) => {
     where: {
       OR: [{ ownerId: userid }, { sitterId: userid }],
       ...(status && { status: status }),
+    },
+    orderBy: { updatedAt: "desc" },
+    include: {
+      owner: { select: { firstname: true, lastname: true, email: true } },
+      sitter: { select: { firstname: true, lastname: true, email: true } },
     },
   });
 
@@ -25,54 +54,50 @@ reservRouter.get("/reserv", isAuthenticated, async (req, res) => {
 
 reservRouter.patch("/req_updatereserv", isAuthenticated, async (req, res) => {
   const userid = req.user.userid;
-  const { resvId, dayRate, petCount, petType, checkIn, checkOut } = req.body;
-
-  if (checkIn || checkOut)
-    if (!isDate(checkIn) || !isDate(checkOut)) {
-      return res.json({ type: "error", message: "Invalid date Format." });
-    } else if (
-      new Date(checkIn).getTime() <= Date.now() ||
-      new Date(checkOut).getTime() <= Date.now() ||
-      new Date(checkOut).getTime() <= new Date(checkIn).getTime()
-    ) {
-      return res.json({
-        type: "error",
-        message: "Invalid checkin, checkout dates.",
-      });
-    }
+  const { resvId, dayRate, petCount, checkIn, checkOut } = req.body;
 
   try {
-    await prisma.reservation.upsert({
-      where: { reserveId: resvId, ownerId: userid, status: { not: "reject" } },
-      update: {
-        ...(dayRate && { ratePerDay: dayRate }),
-        ...(petCount && { petCount: petCount }),
-        ...(petType && { petType: petType }),
-        ...(checkIn && { checkIn: new Date(checkIn) }),
-        ...(checkOut && { checkOut: new Date(checkOut) }),
-        status: "pending",
+    await prisma.reservation.update({
+      where: {
+        reserveId: resvId,
+        ownerId: userid,
       },
-      create: {
+      data: {
         ...(dayRate && { ratePerDay: dayRate }),
         ...(petCount && { petCount: petCount }),
-        ...(petType && { petType: petType }),
         ...(checkIn && { checkIn: new Date(checkIn) }),
         ...(checkOut && { checkOut: new Date(checkOut) }),
-        status: "pending",
+        status: "Pending",
       },
     });
-  } catch (error) {}
+  } catch (error) {
+    console.log(error);
+    return res.json({
+      type: "error",
+      message: "Internal Server Error",
+    });
+  }
+  return res.json({
+    type: "success",
+    message: "Successfully changed the reservation info.",
+  });
 });
 
 reservRouter.patch("/acpt_updatereserv", isAuthenticated, async (req, res) => {
   const userid = req.user.userid;
-  const { resvId, status = "pending" } = req.body;
+  const { resvId, status = "Pending" } = req.body;
 
   try {
-    await prisma.reservation.update({
-      where: { reserveId: resvId, sitterId: userid },
-      data: { status: status },
-    });
+    if (status === "Completed") {
+      await prisma.reservation.update({
+        where: { reserveId: resvId, ownerId: userid },
+        data: { status: status },
+      });
+    } else
+      await prisma.reservation.update({
+        where: { reserveId: resvId, sitterId: userid },
+        data: { status: status },
+      });
   } catch (error) {
     if (error) {
       console.log(error);
@@ -98,17 +123,50 @@ reservRouter.post("/create", isAuthenticated, async (req, res) => {
     messageTxt,
   } = req.body;
 
-  if (
-    !petType ||
-    !isDate(checkIn) ||
-    !isDate(checkOut) ||
-    !ratePerDay ||
-    !sitterId
-  )
+  if (!petType || !checkIn || !checkOut || !ratePerDay || !sitterId)
     return res.json({
       type: "error",
       message: "Incomplete input to create a reservation.",
     });
+
+  const checkResCount = await prisma.client.findFirst({
+    where: { userId: sitterId },
+    select: {
+      _count: {
+        select: { sitterReservation: { where: { status: "On-Going" } } },
+      },
+      Profile: {
+        select: {
+          availabilitySlot: true,
+          availabilityStart: true,
+          availabilityEnd: true,
+        },
+      },
+    },
+  });
+
+  if (
+    checkResCount?.Profile?.availabilitySlot! -
+      checkResCount?._count?.sitterReservation! <=
+    0
+  ) {
+    return res.json({
+      type: "error",
+      message: "Siiter can't accept reservation anymore.",
+    });
+  } else if (
+    !validateBooking(
+      checkIn,
+      checkOut,
+      checkResCount?.Profile?.availabilityStart!,
+      checkResCount?.Profile?.availabilityEnd!
+    )
+  ) {
+    return res.json({
+      type: "error",
+      message: "Siiter can't accept reservation with selected date.",
+    });
+  }
 
   try {
     await prisma.reservation.create({
@@ -119,11 +177,20 @@ reservRouter.post("/create", isAuthenticated, async (req, res) => {
         checkOut: new Date(checkOut),
         ratePerDay,
         sitterId,
-        status: "pending",
+        status: "Pending",
         ownerId: userid,
         ChatRoom: {
           create: {
-            message: { create: { type: "text", messageText: messageTxt } },
+            message: {
+              create: {
+                type: "text",
+                messageText: messageTxt,
+                sender: { connect: { userId: userid } },
+                receiver: {
+                  connect: { userId: sitterId },
+                },
+              },
+            },
           },
         },
       },

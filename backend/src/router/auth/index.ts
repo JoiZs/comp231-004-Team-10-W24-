@@ -3,6 +3,7 @@ import prisma from "../../utils/prismaClient";
 import { isEmail, isStrongPassword } from "validator";
 import { encryptPw } from "../../utils/pwverify";
 import passport from "passport";
+import { isAuthenticated } from "../../utils/loginverify";
 
 const authRouter = Router();
 
@@ -73,9 +74,9 @@ authRouter.post("/register", async (req, res) => {
             city: city,
             province: province,
             postalCode: postal,
+            suburb,
             latitude: lat,
             longitude: long,
-            suburb: suburb,
           },
         },
         Profile: {
@@ -123,18 +124,16 @@ interface AuthError {
 interface AuthUser {
   id: number;
   email: string;
-  // Add other properties as needed
 }
 
 interface AuthInfo {
   message: string;
-  // Add other properties as needed
 }
 
-authRouter.delete("/logout", (req, res, next) => {
+authRouter.delete("/logout", isAuthenticated, (req, res, next) => {
   return req.logOut((err) => {
     if (err) return next(err);
-    res.redirect("/");
+    return res.json({ type: "success", message: "Logout." });
   });
 });
 
