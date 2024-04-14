@@ -43,10 +43,6 @@ function Registration3() {
       <Badge colorScheme="teal">User Type</Badge>
       <span>{registerPl.userType}</span>
       <Divider />
-<<<<<<< HEAD
-
-=======
->>>>>>> b2d7069 (build(docker): dockerize the app)
       <Button colorScheme="blue" onClick={submitHandler} w={"full"}>
         Submit
       </Button>

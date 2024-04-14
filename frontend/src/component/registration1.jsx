@@ -82,19 +82,11 @@ function Registration1({ setPgNum }) {
             whiteSpace={"nowrap"}
             overflow={"hidden"}
           />
-<<<<<<< HEAD
-
-=======
->>>>>>> b2d7069 (build(docker): dockerize the app)
         </Tooltip>        
       ))}
       <Text fontSize='sm'>For best result, use this format: house number, street, neighbourhood, city, state, country, postcode</Text>
     </VStack>
-<<<<<<< HEAD
-
-=======
     
->>>>>>> b2d7069 (build(docker): dockerize the app)
   );
 }
 
