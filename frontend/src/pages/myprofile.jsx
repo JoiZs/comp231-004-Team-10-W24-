@@ -9,6 +9,9 @@ export default function Profile() {
 
   const fetchProfileData = async () => {
     try {
+      const response = await axios.get("http://localhost:4000/profile/me", {
+        withCredentials: true,
+      });
       setProfileData(response.data.data);
       setIsLoading(false);
       console.log("Pet types:", response.data.data.Profile.petType); // Logs the pet types

@@ -54,7 +54,7 @@ services:
     networks:
       - petnet
     ports:
-      - "80:80"
+      - "5173:80"
     volumes:
       - ./:/frontend/
     depends_on:
