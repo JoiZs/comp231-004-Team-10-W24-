@@ -86,7 +86,11 @@ authRouter.post("/register", async (req, res) => {
         },
       },
     })
+<<<<<<< HEAD
     .catch((e) => {
+=======
+    .catch((e:any) => {
+>>>>>>> b2d7069 (build(docker): dockerize the app)
       console.log(e);
       return res.json({
         type: "error",

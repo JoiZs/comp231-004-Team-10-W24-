@@ -11,6 +11,7 @@ import {
 import { SearchIcon } from "@chakra-ui/icons";
 import axios from "axios";
 import { locationIQtk } from "../consts";
+<<<<<<< HEAD
 
 import { Text } from '@chakra-ui/react'
 
@@ -18,6 +19,10 @@ import { Text } from '@chakra-ui/react'
 
 // eslint-disable-next-line react/prop-types
 
+=======
+import { Text } from '@chakra-ui/react'
+
+>>>>>>> b2d7069 (build(docker): dockerize the app)
 function Registration1({ setPgNum }) {
   const { _registerPl, setRegisterPl } = useContext(RegisterCtx);
   const [loc, setLoc] = useState([]);
@@ -59,14 +64,22 @@ function Registration1({ setPgNum }) {
         <Input ref={SearchRef} placeholder="Search Location" />
         <InputRightElement>
           <IconButton
+<<<<<<< HEAD
 
             colorScheme="blue"
 
+=======
+            colorScheme="blue"
+>>>>>>> b2d7069 (build(docker): dockerize the app)
             onClick={addressHandler}
             icon={<SearchIcon />}
           />
         </InputRightElement>
+<<<<<<< HEAD
       </InputGroup>
+=======
+      </InputGroup>      
+>>>>>>> b2d7069 (build(docker): dockerize the app)
       {loc.map((el) => (
         <Tooltip label={el.display_name} key={el.place_id}>
           <Input
@@ -89,12 +102,19 @@ function Registration1({ setPgNum }) {
             whiteSpace={"nowrap"}
             overflow={"hidden"}
           />
+<<<<<<< HEAD
 
+=======
+>>>>>>> b2d7069 (build(docker): dockerize the app)
         </Tooltip>        
       ))}
       <Text fontSize='sm'>For best result, use this format: house number, street, neighbourhood, city, state, country, postcode</Text>
     </VStack>
+<<<<<<< HEAD
 
+=======
+    
+>>>>>>> b2d7069 (build(docker): dockerize the app)
   );
 }
 

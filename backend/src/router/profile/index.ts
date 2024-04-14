@@ -78,7 +78,11 @@ profileRouter.post("/sitters", async (req, res) => {
         reviewReceived: { every: { rating: { gte: sortByRating - 1 } } },
       },
     })
+<<<<<<< HEAD
     .then(async (result) => {
+=======
+    .then(async (result: any) => {
+>>>>>>> b2d7069 (build(docker): dockerize the app)
       const restCount = await prisma.client.count({
         skip: pageNum * 5,
         orderBy: { userId: "desc" },
@@ -92,8 +96,13 @@ profileRouter.post("/sitters", async (req, res) => {
         : undefined;
 
       const sitterPromises = result
+<<<<<<< HEAD
         .filter((ft) => (sortByRating > 0 ? ft._count.reviewReceived > 0 : ft))
         .map(async (el) => {
+=======
+        .filter((ft:any) => (sortByRating > 0 ? ft._count.reviewReceived > 0 : ft))
+        .map(async (el:any) => {
+>>>>>>> b2d7069 (build(docker): dockerize the app)
           const sitterData = await prisma.review.aggregate({
             _avg: { rating: true },
             orderBy: { receiverId: "desc" },

@@ -126,7 +126,11 @@ const EditProfile = (props) => {
 
     try {
       const response = await axios.patch(
+<<<<<<< HEAD
         "http://localhost:4000/profile/update",
+=======
+        import.meta.env.VITE_SERV_URL + "/profile/update",
+>>>>>>> b2d7069 (build(docker): dockerize the app)
         requestBody,
         { withCredentials: true }
       );

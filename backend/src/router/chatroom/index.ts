@@ -48,7 +48,11 @@ chatroomRouter.post("/reserv", isAuthenticated, async (req, res) => {
       ...chatRoom,
       isOwner: chatRoom.reservation.owner.userId === userid,
       isFollowed: chatRoom.reservation.sitter.followedBy.some(
+<<<<<<< HEAD
         (fl) => fl.userId === userid
+=======
+        (fl: { userId: string }) => fl.userId === userid
+>>>>>>> b2d7069 (build(docker): dockerize the app)
       ),
     },
   });

@@ -6,8 +6,12 @@ export const converse = async (
   receiver: string,
   roomid: string,
   msg: { type: string; msgTxt: string; img: any },
+<<<<<<< HEAD
   io: Server,
   sk: Socket
+=======
+  io: Server
+>>>>>>> b2d7069 (build(docker): dockerize the app)
 ) => {
   if (msg.type == "text") {
     await prisma.message
@@ -20,7 +24,11 @@ export const converse = async (
           receiverId: receiver,
         },
       })
+<<<<<<< HEAD
       .then((res) => {
+=======
+      .then((res: any) => {
+>>>>>>> b2d7069 (build(docker): dockerize the app)
         io.emit("sendMsg", {
           type: "success",
           message: "Sent a message",
